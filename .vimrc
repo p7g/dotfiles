@@ -1,6 +1,13 @@
 scriptencoding utf-8
 set fileencoding=utf-8 termencoding=utf-8 encoding=utf-8
 
+" create a directory if it doesn't already exist
+function! s:assertdir(path)
+  if !isdirectory(a:path)
+    execute '!mkdir ' . a:path
+  endif
+endfunction
+
 " try to figure out where the .vim equivalent directory is
 let $vimdir = resolve(expand('<sfile>:p:h'))
 if $vimdir ==# $HOME
@@ -10,6 +17,10 @@ if $vimdir ==# $HOME
     let $vimdir = $HOME . 'vimfiles'
   endif
 endif
+
+call s:assertdir($vimdir . '/undo')
+call s:assertdir($vimdir . '/backups')
+call s:assertdir($vimdir . '/tmp')
 
 " install vim-plug if it's not installed already
 if empty(glob($vimdir . '/autoload/plug.vim'))
