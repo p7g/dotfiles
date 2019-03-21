@@ -11,10 +11,10 @@ endfunction
 " try to figure out where the .vim equivalent directory is
 let $vimdir = resolve(expand('<sfile>:p:h'))
 if $vimdir ==# $HOME
-  if isdirectory($HOME . '.vim')
-    let $vimdir = $HOME . '.vim'
-  elseif isdirectory($HOME . 'vimfiles')
-    let $vimdir = $HOME . 'vimfiles'
+  if isdirectory($HOME . '/.vim')
+    let $vimdir = $HOME . '/.vim'
+  elseif isdirectory($HOME . '/vimfiles')
+    let $vimdir = $HOME . '/vimfiles'
   endif
 endif
 
