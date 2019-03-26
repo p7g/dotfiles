@@ -1,6 +1,12 @@
 scriptencoding utf-8
 set fileencoding=utf-8 termencoding=utf-8 encoding=utf-8
 
+if has('win32') || has('win64')
+  let s:pathsep = '\'
+else
+  let s:pathsep = '/'
+endif
+
 " create a directory if it doesn't already exist
 function! s:assertdir(path)
   if !isdirectory(a:path)
@@ -8,31 +14,51 @@ function! s:assertdir(path)
   endif
 endfunction
 
+function! s:joinpaths(...)
+  return join(a:000, s:pathsep)
+endfunction
+
 " try to figure out where the .vim equivalent directory is
 let $vimdir = resolve(expand('<sfile>:p:h'))
 if $vimdir ==# $HOME
-  if isdirectory($HOME . '/.vim')
-    let $vimdir = $HOME . '/.vim'
-  elseif isdirectory($HOME . '/vimfiles')
-    let $vimdir = $HOME . '/vimfiles'
+  if isdirectory(s:joinpaths($HOME, '.vim'))
+    let $vimdir = s:joinpaths($HOME, '.vim')
+  elseif isdirectory(s:joinpaths($HOME, 'vimfiles'))
+    let $vimdir = s:joinpaths($HOME, 'vimfiles')
   endif
 endif
 
-call s:assertdir($vimdir . '/undo')
-call s:assertdir($vimdir . '/backups')
-call s:assertdir($vimdir . '/tmp')
+call s:assertdir(s:joinpaths($vimdir, 'undo'))
+call s:assertdir(s:joinpaths($vimdir, 'backups'))
+call s:assertdir(s:joinpaths($vimdir, 'tmp'))
 
 " install vim-plug if it's not installed already
-if empty(glob($vimdir . '/autoload/plug.vim'))
-  silent !curl -fLo $vimdir/autoload/plug.vim --create-dirs
-        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+if empty(glob(s:joinpaths($vimdir, 'autoload', 'plug.vim')))
+  echom 'Installing vim-plug'
+  let $vimplugloc = s:joinpaths($vimdir, 'autoload', 'plug.vim')
+  if has('win32') || has('win64')
+    echom 'Using Powershell'
+    set shell=powershell
+    let $autoloaddir = s:joinpaths($vimdir, 'autoload')
+    silent execute '!md ' . $autoloaddir
+    silent execute 
+          \  '![Net.WebClient]::new().DownloadFile('
+          \ .   "'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim',"
+          \ .   "$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('"
+          \      . $vimplugloc
+          \ . "'))"
+  else
+    echom 'Using curl'
+    silent execute '!curl -fLo ' . $vimplugloc . ' --create-dirs'
+          \ . 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  endif
   augroup install_vim_plug
     autocmd!
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
   augroup END
 endif
 
-call plug#begin($vimdir . '/plugged')
+call plug#begin(s:joinpaths($vimdir, '/plugged'))
 
 " colorschemes
 Plug 'ajh17/Spacegray.vim'
@@ -56,9 +82,12 @@ colorscheme spacegray
 set autoindent
 set autoread   " reload files when changed externally
 set backupdir=$vimdir/backups
+set belloff=all
 set colorcolumn=80
 set directory=$vimdir/tmp
 set expandtab
+set guifont=IBM\ Plex\ Mono:h12
+set guioptions=
 set ignorecase
 set incsearch
 set laststatus=2
