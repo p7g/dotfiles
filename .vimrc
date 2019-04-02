@@ -1,7 +1,9 @@
 scriptencoding utf-8
 set fileencoding=utf-8 termencoding=utf-8 encoding=utf-8
 
-if has('win32') || has('win64')
+let s:haswin = has('win32') || has('win64')
+
+if s:haswin
   let s:pathsep = '\'
 else
   let s:pathsep = '/'
@@ -10,7 +12,7 @@ endif
 " create a directory if it doesn't already exist
 function! s:assertdir(path)
   if !isdirectory(a:path)
-    execute '!mkdir ' . a:path
+    silent execute '!mkdir -p ' . a:path
   endif
 endfunction
 
@@ -21,11 +23,13 @@ endfunction
 " try to figure out where the .vim equivalent directory is
 let $vimdir = resolve(expand('<sfile>:p:h'))
 if $vimdir ==# $HOME
-  if isdirectory(s:joinpaths($HOME, '.vim'))
-    let $vimdir = s:joinpaths($HOME, '.vim')
-  elseif isdirectory(s:joinpaths($HOME, 'vimfiles'))
-    let $vimdir = s:joinpaths($HOME, 'vimfiles')
+  if s:haswin
+    let s:path = s:joinpaths($HOME, 'vimfiles')
+  else
+    let s:path = s:joinpaths($HOME, '.vim')
   endif
+  call s:assertdir(s:path)
+  let $vimdir = s:path
 endif
 
 call s:assertdir(s:joinpaths($vimdir, 'undo'))
@@ -49,7 +53,7 @@ if empty(glob(s:joinpaths($vimdir, 'autoload', 'plug.vim')))
           \ . "'))"
   else
     echom 'Using curl'
-    silent execute '!curl -fLo ' . $vimplugloc . ' --create-dirs'
+    silent execute '!curl -fLo ' . $vimplugloc . ' --create-dirs '
           \ . 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   endif
   augroup install_vim_plug
@@ -181,3 +185,4 @@ let g:ale_echo_msg_format = '%linter%: %s'
 
 " only use mcs to lint c#
 let g:ale_linters.cs = ['mcs']
+
