@@ -47,3 +47,7 @@ export PS1='$(dark_exit_code "$?") $(short_dir "$PWD") $(bold_start)\$$(bold_end
 
 # enable arrow keys and all that
 set -o emacs
+
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
