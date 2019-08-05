@@ -1,3 +1,5 @@
+. ~/.profile
+
 bold_start() {
   printf "$(tput bold)"
 }
@@ -51,3 +53,7 @@ set -o emacs
 # [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+
+mcd() {
+  mkdir -p -- "$1" && cd -P -- "$1"
+}
