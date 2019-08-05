@@ -69,28 +69,42 @@ endif
 call plug#begin(s:joinpaths($vimdir, '/plugged'))
 
 " colorschemes
+Plug 'KKPMW/oldbook-vim'
+Plug 'Nequo/vim-allomancer'
 Plug 'ajh17/Spacegray.vim'
-Plug 'cseelus/vim-colors-tone'
+Plug 'arcticicestudio/nord-vim'
 Plug 'atelierbram/Base2Tone-vim'
-Plug 'dim13/gocode.vim'
 Plug 'axvr/photon.vim'
-Plug 'pgdouyon/vim-yin-yang'
-Plug 'sansbrina/vim-garbage-oracle'
+Plug 'cseelus/vim-colors-tone'
+Plug 'dim13/gocode.vim'
+Plug 'liuchengxu/space-vim-theme'
 Plug 'pbrisbin/vim-colors-off'
+Plug 'pgdouyon/vim-yin-yang'
+Plug 'reedes/vim-colors-pencil'
+Plug 'robertmeta/nofrils'
+Plug 'sansbrina/vim-garbage-oracle'
+Plug 'w0ng/vim-hybrid'
 
 " plugins
-Plug 'tpope/vim-sleuth'
-Plug 'tpope/vim-surround'
-Plug 'w0rp/ale'
-Plug 'sheerun/vim-polyglot'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': './install --all'}
 Plug 'junegunn/fzf.vim'
+Plug 'kchmck/vim-coffee-script'
+Plug 'killphi/vim-ebnf'
+Plug 'nbouscal/vim-stylish-haskell'
+Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+Plug 'sheerun/vim-polyglot'
+Plug 'tjvr/vim-nearley'
+Plug 'tommcdo/vim-lion'
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-dadbod'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rsi'
-Plug 'kchmck/vim-coffee-script'
-Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
-Plug 'tpope/vim-dadbod'
+Plug 'tpope/vim-sleuth'
+Plug 'tpope/vim-surround'
+Plug 'vim-erlang/vim-erlang-compiler'
+Plug 'vim-erlang/vim-erlang-runtime'
+Plug 'w0rp/ale'
 
 " coc plugins:
 " - coc-json
@@ -108,8 +122,23 @@ call plug#end()
 filetype plugin indent on
 syntax on
 
+""" colorscheme configuration
 set background=light
+
+" nord
+let g:nord_italic = 1
+let g:nord_underline = 1
+let g:nord_italic_comments = 1
+
+" nofrils
+let g:nofrils_strbackgrounds = 1
+let g:nofrils_heavycomments = 1
+
 colorscheme off
+
+if !has('nvim')
+  set guifont=IBMPlexMono-Text:h15
+endif
 
 set autoindent
 set autoread   " reload files when changed externally
@@ -118,9 +147,7 @@ set belloff=all
 set colorcolumn=80
 set directory=$vimdir/tmp
 set expandtab
-if !has('nvim')
-  set guifont=IBMPlexMono-Text:h15
-endif
+set exrc
 set grepprg=rg\ --vimgrep
 set guioptions=
 set ignorecase
@@ -135,13 +162,14 @@ set novisualbell
 set number
 set numberwidth=4
 set relativenumber
+set secure
 set shiftround
-set shiftwidth=2
+set shiftwidth=4
 set smartcase
 set smartindent
 set splitbelow
 set splitright
-set tabstop=2
+set tabstop=4
 set termguicolors
 set undodir=$vimdir/undo
 set undofile
@@ -177,9 +205,17 @@ noremap <C-w>j <C-w>h
 nnoremap <CR> o<Esc>
 nnoremap <S-CR> O<Esc>
 
+" resize split with ctrl-arrows
+nnoremap <silent> <C-Up> :resize +5<CR>
+nnoremap <silent> <C-Down> :resize -5<CR>
+nnoremap <silent> <C-Left> :vertical resize -5<CR>
+nnoremap <silent> <C-Right> :vertical resize +5<CR>
+
+" <leader>ts removes trailing whitespace
+nnoremap <silent> <leader>ts :%s/\s\+$//ge<CR>
+
 " clear search highlight with <leader>space
 nnoremap <silent> <leader><space> :let @/=""<CR>
-
 
 " o/O
 "
@@ -225,6 +261,19 @@ function! s:DiffWithSaved()
 endfunction
 command! D call s:DiffWithSaved()
 
+" <leader>b shows current buffers
+nnoremap <leader>b :buffers<CR>
+
+" <leader>c shows positional stats
+nnoremap <leader>c g<C-g>
+
+" open vimrc quickly
+nnoremap <leader>vrc :vsplit $MYVIMRC<CR>
+nnoremap <leader>src :split  $MYVIMRC<CR>
+nnoremap <leader>rc  :edit   $MYVIMRC<CR>
+" source vimrc quickly
+nnoremap <leader>st :source $MYVIMRC<CR>
+
 " automatically change to non-relative numbers when not active buffer
 augroup numbertoggle
   autocmd!
@@ -250,6 +299,8 @@ augroup filetype_php
 augroup END
 
 " ale config
+let g:ale_enabled = 0
+
 if !exists('g:ale_linters')
   let g:ale_linters = {}
 endif
@@ -286,3 +337,22 @@ function! s:show_documentation()
     call CocAction('doHover')
   endif
 endfunction
+
+" only use mcs to lint c#
+let g:ale_linters.cs = ['mcs']
+
+let g:ale_virtualenv_dir_names = ['~/.local/venvs']
+
+" change cursor depending on mode in term
+let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+let &t_SR = "\<Esc>]50;CursorShape=2\x7"
+let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+
+" FZF mappings
+nnoremap <silent> <C-P> :Files<CR>
+nnoremap <silent> <leader>B :Buffers<CR>
+nnoremap <silent> <leader>Gf :GFiles<CR>
+nnoremap <silent> <leader>G? :GFiles?<CR>
+nnoremap <silent> <leader>Gb :BCommits<CR>
+nnoremap <silent> <leader>Gc :Commits<CR>
+nnoremap <silent> <leader>H :History:<CR>
