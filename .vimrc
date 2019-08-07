@@ -64,8 +64,8 @@ endfunction
 if empty(glob(s:joinpaths($vimdir, 'autoload', 'plug.vim')))
   echom 'Installing vim-plug'
   let $vimplugloc = s:joinpaths($vimdir, 'autoload', 'plug.vim')
-  let l:plugurl = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  call s:downloadfile(l:plugurl, $vimplugloc)
+  let s:plugurl = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  call s:downloadfile(s:plugurl, $vimplugloc)
   augroup install_vim_plug
     autocmd!
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
