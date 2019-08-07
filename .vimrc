@@ -17,7 +17,12 @@ endif
 " create a directory if it doesn't already exist
 function! s:assertdir(path)
   if !isdirectory(a:path)
-    silent execute '!mkdir -p ' . a:path
+    let l:path = shellescape(a:path)
+    if s:haswin
+      silent execute '!New-Item -Path "' . l:path . '" -Type Directory'
+    else
+      silent execute '!mkdir -p ' . l:path
+    endif
   endif
 endfunction
 
@@ -37,36 +42,37 @@ if $vimdir ==# $HOME
   let $vimdir = s:path
 endif
 
-call s:assertdir(s:joinpaths($vimdir, 'undo'))
-call s:assertdir(s:joinpaths($vimdir, 'backups'))
-call s:assertdir(s:joinpaths($vimdir, 'tmp'))
+for p in ['undo', 'backups', 'tmp']
+  call s:assertdir(s:joinpaths($vimdir, p))
+endfor
+
+function! s:downloadfile(src, dest)
+  if s:haswin
+    silent execute
+          \ '![Net.WebClient]::new().DownloadFile('
+          \ . "'" . shellescape(a:src) . "'"
+          \ . "\$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('"
+          \    . shellescape(a:dest)
+          \ . "'))"
+  else
+    silent execute '!curl -fLo ' . shellescape(a:dest) . ' --create-dirs '
+          \ . shellescape(a:src)
+  endif
+endfunction
 
 " install vim-plug if it's not installed already
 if empty(glob(s:joinpaths($vimdir, 'autoload', 'plug.vim')))
   echom 'Installing vim-plug'
   let $vimplugloc = s:joinpaths($vimdir, 'autoload', 'plug.vim')
-  if s:haswin
-    echom 'Using Powershell'
-    let $autoloaddir = s:joinpaths($vimdir, 'autoload')
-    silent execute '!md ' . $autoloaddir
-    silent execute 
-          \  '![Net.WebClient]::new().DownloadFile('
-          \ .   "'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim',"
-          \ .   "$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('"
-          \      . $vimplugloc
-          \ . "'))"
-  else
-    echom 'Using curl'
-    silent execute '!curl -fLo ' . $vimplugloc . ' --create-dirs '
-          \ . 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  endif
+  let l:plugurl = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  call s:downloadfile(l:plugurl, $vimplugloc)
   augroup install_vim_plug
     autocmd!
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
   augroup END
 endif
 
-call plug#begin(s:joinpaths($vimdir, '/plugged'))
+call plug#begin(s:joinpaths($vimdir, 'plugged'))
 
 " colorschemes
 Plug 'KKPMW/oldbook-vim'
@@ -136,7 +142,7 @@ let g:nofrils_heavycomments = 1
 
 colorscheme off
 
-if !has('nvim')
+if has('gui') && !has('nvim')
   set guifont=IBMPlexMono-Text:h15
 endif
 
@@ -247,7 +253,7 @@ nnoremap <silent> <expr> O <SID>NewLineInsertExpr(1, 'O')
 " diff the current state of a buffer with the most recently saved version of
 " the file
 function! s:DiffWithSaved()
-  let filetype = &filetype
+  let l:filetype = &filetype
   diffthis
   vnew | r # | normal! 1Gdd
   diffthis
@@ -257,7 +263,7 @@ function! s:DiffWithSaved()
         \ 'nobuflisted ' .
         \ 'noswapfile ' .
         \ 'readonly ' .
-        \ 'filetype=' . filetype
+        \ 'filetype=' . l:filetype
 endfunction
 command! D call s:DiffWithSaved()
 
@@ -293,9 +299,10 @@ augroup filetype_php
   autocmd!
   " run the current file/selection with <localleader>r
   autocmd FileType php noremap <localleader>r :w !php -r
-        \ '$f = file_get_contents("php://stdin");
-        \ eval(substr($f, strpos($f, "<?php") + 5));'
-        \ <CR>
+        \ '$f = file_get_contents("php://stdin");'
+        \ . '$pos = strpos($f, "<?php");'
+        \ . '$code = $pos === 0 ? substr($f, $pos + strlen("<?php")) : $f;'
+        \ . 'eval($code);'<CR>
 augroup END
 
 " ale config
