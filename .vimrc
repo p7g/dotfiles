@@ -46,101 +46,84 @@ for p in ['undo', 'backups', 'tmp']
   call s:assertdir(s:joinpaths($vimdir, p))
 endfor
 
-function! s:downloadfile(src, dest)
-  if s:haswin
-    silent execute
-          \ '![Net.WebClient]::new().DownloadFile('
-          \ . "'" . shellescape(a:src) . "'"
-          \ . "\$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('"
-          \    . shellescape(a:dest)
-          \ . "'))"
-  else
-    silent execute '!curl -fLo ' . shellescape(a:dest) . ' --create-dirs '
-          \ . shellescape(a:src)
-  endif
-endfunction
-
-" install vim-plug if it's not installed already
-if empty(glob(s:joinpaths($vimdir, 'autoload', 'plug.vim')))
-  echom 'Installing vim-plug'
-  let $vimplugloc = s:joinpaths($vimdir, 'autoload', 'plug.vim')
-  let s:plugurl = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  call s:downloadfile(s:plugurl, $vimplugloc)
+let $deindir = s:joinpaths($HOME, '.cache', 'dein', 'repos', 'github.com', 'Shougo', 'dein.vim')
+" install dein if it's not installed already
+if !isdirectory(glob(s:joinpaths($HOME, '.cache', 'dein')))
+  echom 'Installing dein'
+  execute '!git clone https://github.com/Shougo/dein.vim ' . $deindir
   augroup install_vim_plug
     autocmd!
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
   augroup END
 endif
 
-call plug#begin(s:joinpaths($vimdir, 'plugged'))
+" Required:
+set runtimepath+=$deindir
 
-" colorschemes
-Plug 'KKPMW/oldbook-vim'
-Plug 'Nequo/vim-allomancer'
-Plug 'ajh17/Spacegray.vim'
-Plug 'arcticicestudio/nord-vim'
-Plug 'atelierbram/Base2Tone-vim'
-Plug 'axvr/photon.vim'
-Plug 'cseelus/vim-colors-tone'
-Plug 'dim13/gocode.vim'
-Plug 'liuchengxu/space-vim-theme'
-Plug 'pbrisbin/vim-colors-off'
-Plug 'pgdouyon/vim-yin-yang'
-Plug 'reedes/vim-colors-pencil'
-Plug 'robertmeta/nofrils'
-Plug 'sansbrina/vim-garbage-oracle'
-Plug 'w0ng/vim-hybrid'
+" Required:
+let s:deinroot = s:joinpaths($HOME, '.cache', 'dein')
+if dein#load_state(s:deinroot)
+  call dein#begin(s:deinroot)
 
-" plugins
-Plug 'editorconfig/editorconfig-vim'
-Plug 'junegunn/fzf', {'dir': '~/.fzf', 'do': './install --all'}
-Plug 'junegunn/fzf.vim'
-Plug 'kchmck/vim-coffee-script'
-Plug 'killphi/vim-ebnf'
-Plug 'nbouscal/vim-stylish-haskell'
-Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
-Plug 'sheerun/vim-polyglot'
-Plug 'tjvr/vim-nearley'
-Plug 'tommcdo/vim-lion'
-Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-dadbod'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rsi'
-Plug 'tpope/vim-sleuth'
-Plug 'tpope/vim-surround'
-Plug 'vim-erlang/vim-erlang-compiler'
-Plug 'vim-erlang/vim-erlang-runtime'
-Plug 'w0rp/ale'
+  " Let dein manage dein
+  " Required:
+  call dein#add($deindir)
 
-" coc plugins:
-" - coc-json
-" - coc-tsserver
-" - coc-html
-" - coc-css
-" - coc-python
-" - coc-highlight
-" - coc-emmet
-" - coc-git
-" - coc-vimlsp
+  " Add or remove your plugins here like this:
+  call dein#add('dim13/gocode.vim')
+  call dein#add('pgdouyon/vim-yin-yang')
+  call dein#add('sansbrina/vim-garbage-oracle')
+  call dein#add('pbrisbin/vim-colors-off')
 
-call plug#end()
+  call dein#add('tpope/vim-sleuth')
+  call dein#add('tpope/vim-surround')
+  call dein#add('w0rp/ale')
+  call dein#add('sheerun/vim-polyglot')
+  call dein#add('editorconfig/editorconfig-vim')
+  call dein#add('/usr/local/opt/fzf')
+  call dein#add('junegunn/fzf.vim')
+  call dein#add('tpope/vim-fugitive')
+  call dein#add('tpope/vim-rsi')
+  call dein#add('kchmck/vim-coffee-script')
+  call dein#add('tommcdo/vim-lion')
+  call dein#add('neoclide/coc.nvim', {'rev': '*', 'build': './install.sh'})
+  call dein#add('tpope/vim-dadbod')
+  call dein#add('sbdchd/neoformat')
+
+  " Required:
+  call dein#end()
+  call dein#save_state()
+endif
+
+if dein#check_install()
+  call dein#install()
+endif
+
+let s:coc_extensions = [
+      \ 'coc-json',
+      \ 'coc-tsserver',
+      \ 'coc-html',
+      \ 'coc-css',
+      \ 'coc-python',
+      \ 'coc-emmet',
+      \ 'coc-git',
+      \ 'coc-vimlsp',
+      \ 'coc-prettier',
+      \ 'coc-tabnine',
+      \ ]
+
+function! InstallCocExtensions()
+  for l:extension in s:coc_extensions
+    execute 'CocInstall ' . l:extension
+  endfor
+endfunction
 
 filetype plugin indent on
 syntax on
 
 """ colorscheme configuration
 set background=light
-
-" nord
-let g:nord_italic = 1
-let g:nord_underline = 1
-let g:nord_italic_comments = 1
-
-" nofrils
-let g:nofrils_strbackgrounds = 1
-let g:nofrils_heavycomments = 1
-
-colorscheme off
+colorscheme yang
 
 if has('gui') && !has('nvim')
   set guifont=IBMPlexMono-Text:h15
@@ -150,7 +133,7 @@ set autoindent
 set autoread   " reload files when changed externally
 set backupdir=$vimdir/backups
 set belloff=all
-set colorcolumn=80
+set colorcolumn=160
 set directory=$vimdir/tmp
 set expandtab
 set exrc
@@ -170,7 +153,8 @@ set numberwidth=4
 set relativenumber
 set secure
 set shiftround
-set shiftwidth=4
+set shiftwidth=2
+set signcolumn=yes
 set smartcase
 set smartindent
 set splitbelow
@@ -179,6 +163,7 @@ set tabstop=4
 set termguicolors
 set undodir=$vimdir/undo
 set undofile
+set updatetime=300
 set wrap
 set writebackup
 
@@ -192,6 +177,7 @@ set statusline+=%h        " helpfile flag
 set statusline+=%w        " preview window flag
 set statusline+=%q        " quickfix window flag
 set statusline+=\ %{coc#status()}
+set statusline+=%{get(b:,'coc_current_function','')}
 set statusline+=%=        " switch to right side
 set statusline+=%P        " percentage through file
 set statusline+=\         " space after percentage
@@ -206,6 +192,9 @@ noremap j h
 noremap <C-w>h <C-w>k
 noremap <C-w>k <C-w>j
 noremap <C-w>j <C-w>h
+
+command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" ' . shellescape(<q-args>) . '| tr -d "\017"', 1, <bang>0)
+noremap <silent> <C-p> :FZF<CR>
 
 " press enter or shift enter to add a new line above/below
 nnoremap <CR> o<Esc>
@@ -305,25 +294,16 @@ augroup filetype_php
         \ . 'eval($code);'<CR>
 augroup END
 
-" ale config
-let g:ale_enabled = 0
+augroup comment_textwidth
+  autocmd!
+  " set the textwidth to the value of colorcolumn when in a comment
+  autocmd TextChanged,TextChangedI * :call s:AdjustTextWidth()
+augroup END
 
-if !exists('g:ale_linters')
-  let g:ale_linters = {}
-endif
-
-" lint a little less often to prevent linters blowing up your PC
-let g:ale_lint_on_text_changed = 'normal'
-let g:ale_lint_on_insert_leave = 1
-
-" show which linter is giving the error
-let g:ale_echo_msg_format = '%linter%: %s'
-let g:ale_python_flake8_executable = '~/.local/venvs/fellow/bin/flake8'
-let g:ale_python_black_executable = '~/.local/venvs/fellow/bin/tan'
-let g:ale_python_mypy_executable = '~/.local/venvs/fellow/bin/mypy'
-let g:ale_python_pylint_executable = '~/.local/venvs/fellow/bini/pylint'
-let g:ale_linters.python = ['flake8', 'mypy', 'black', 'pylint']
-let g:ale_linters.coffee = ['eslint', 'coffee', 'coffeelint']
+function! s:AdjustTextWidth() abort
+  let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
+  let &textwidth = syn_element =~? 'comment' ? &cc : 0
+endfunction
 
 " coc config
 nmap <leader>d :CocList diagnostics<CR>
@@ -336,6 +316,17 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 nmap <leader>rn <Plug>(coc-rename)
 nnoremap <silent> K :call <SID>show_documentation()<CR>
+xmap <leader>f <Plug>(coc-format-selected)
+nmap <leader>f :call CocAction('format')<CR>
+nmap <silent> <TAB> <Plug>(coc-range-select)
+xmap <silent> <TAB> <Plug>(coc-range-select)
+xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
+nmap <silent> <C-k> <Plug>(coc-diagnostic-info)
+
+augroup cocsettings
+  autocmd!
+  autocmd CursorHold * silent call CocActionAsync('highlight')
+augroup END
 
 function! s:show_documentation()
   if index(['vim', 'help'], &filetype) >= 0
@@ -345,15 +336,6 @@ function! s:show_documentation()
   endif
 endfunction
 
-" only use mcs to lint c#
-let g:ale_linters.cs = ['mcs']
-
-let g:ale_virtualenv_dir_names = ['~/.local/venvs']
-
-" change cursor depending on mode in term
-let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-let &t_SR = "\<Esc>]50;CursorShape=2\x7"
-let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
 " FZF mappings
 nnoremap <silent> <C-P> :Files<CR>
@@ -363,3 +345,29 @@ nnoremap <silent> <leader>G? :GFiles?<CR>
 nnoremap <silent> <leader>Gb :BCommits<CR>
 nnoremap <silent> <leader>Gc :Commits<CR>
 nnoremap <silent> <leader>H :History:<CR>
+
+" rst stuff
+function! RSTMakeTitle(level) abort
+  let l:underline_char = ['=', '=', '-', '\~', '#', '$', '+'][a:level]
+  normal yyp
+  execute 's/./' . l:underline_char . '/g'
+  let @/=''
+  normal! o
+  normal! o
+endfunction
+
+augroup filetype_rst
+  autocmd!
+
+  autocmd filetype rst nnoremap <leader>t :<C-U>call RSTMakeTitle(v:count)<CR>
+augroup END
+
+" neoformat config
+let g:neoformat_python_black = {
+      \ 'exe': 'tan',
+      \ 'args': ['-'],
+      \ 'stdin': 1,
+      \ 'no_append': 1,
+      \ }
+
+let g:neoformat_enabled_python = ['black']
