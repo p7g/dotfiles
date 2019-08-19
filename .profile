@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 alias ll='ls -l'
 alias la='ls -la'
 
@@ -9,6 +11,7 @@ alias ud='docker-compose up -d'
 
 alias rg='rg -p'
 alias less='less -R'
+alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
 
 if [ -x "$(command -v nvim)" ]; then
   export EDITOR="$(command -v nvim)"
@@ -63,5 +66,17 @@ m() {
 if [ -x "$(command -v fnm)" ]; then
   eval "$(fnm env --multi)"
 fi
+
+export FZF_DEFAULT_COMMAND='rg --files'
+
+# start eslint daemon
+>/dev/null eslint_d start
+
+ESLINT_PORT=$(cat ~/.eslint_d | cut -d' ' -f1)
+ESLINT_TOKEN=$(cat ~/.eslint_d | cut -d' ' -f2)
+
+eslint() {
+  echo "$ESLINT_TOKEN $(pwd) $@" | nc localhost $ESLINT_PORT
+}
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
