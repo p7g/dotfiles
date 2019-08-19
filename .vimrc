@@ -42,32 +42,25 @@ if $vimdir ==# $HOME
   let $vimdir = s:path
 endif
 
-for p in ['undo', 'backups', 'tmp']
-  call s:assertdir(s:joinpaths($vimdir, p))
+for s:p in ['undo', 'backups', 'tmp']
+  call s:assertdir(s:joinpaths($vimdir, s:p))
 endfor
 
-let $deindir = s:joinpaths($HOME, '.cache', 'dein', 'repos', 'github.com', 'Shougo', 'dein.vim')
+let s:deinroot = s:joinpaths($HOME, '.cache', 'dein')
+let s:deindir = s:joinpaths(s:deinroot, 'repos', 'github.com', 'Shougo', 'dein.vim')
 " install dein if it's not installed already
-if !isdirectory(glob(s:joinpaths($HOME, '.cache', 'dein')))
+if !isdirectory(glob(s:deinroot))
   echom 'Installing dein'
-  execute '!git clone https://github.com/Shougo/dein.vim ' . $deindir
-  augroup install_vim_plug
-    autocmd!
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-  augroup END
+  execute '!git clone https://github.com/Shougo/dein.vim ' . s:deindir
 endif
 
-" Required:
-set runtimepath+=$deindir
-
-" Required:
-let s:deinroot = s:joinpaths($HOME, '.cache', 'dein')
+let &runtimepath .= ',' . s:deindir
 if dein#load_state(s:deinroot)
   call dein#begin(s:deinroot)
 
   " Let dein manage dein
   " Required:
-  call dein#add($deindir)
+  call dein#add(s:deindir)
 
   " Add or remove your plugins here like this:
   call dein#add('dim13/gocode.vim')
@@ -77,7 +70,6 @@ if dein#load_state(s:deinroot)
 
   call dein#add('tpope/vim-sleuth')
   call dein#add('tpope/vim-surround')
-  call dein#add('w0rp/ale')
   call dein#add('sheerun/vim-polyglot')
   call dein#add('editorconfig/editorconfig-vim')
   call dein#add('/usr/local/opt/fzf')
@@ -98,6 +90,13 @@ endif
 if dein#check_install()
   call dein#install()
 endif
+
+function! CleanPlugins()
+  for l:path in dein#check_clean()
+    echom 'Deleting ' . l:path
+    call delete(fnameescape(l:path), 'rf')
+  endfor
+endfunction
 
 let s:coc_extensions = [
       \ 'coc-json',
