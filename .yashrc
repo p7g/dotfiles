@@ -267,7 +267,6 @@ if [ -e "$1" ] && ! [ -d "$1" ]; then
 fi
 COMMAND_NOT_FOUND_HANDLER=("$COMMAND_NOT_FOUND_HANDLER" '_file_type "$@"')
 
-alias vim='nvim'
 alias source='.'
 
 export PATH="/usr/local/bin:$PATH"
