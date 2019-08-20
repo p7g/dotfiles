@@ -117,6 +117,7 @@ let s:coc_extensions = [
       \ 'coc-css',
       \ 'coc-python',
       \ 'coc-emmet',
+      \ 'coc-eslint',
       \ 'coc-git',
       \ 'coc-vimlsp',
       \ 'coc-prettier',
