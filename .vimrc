@@ -50,12 +50,18 @@ let s:deinroot = s:joinpaths($HOME, '.cache', 'dein')
 let s:deindir = s:joinpaths(s:deinroot, 'repos', 'github.com', 'Shougo', 'dein.vim')
 " install dein if it's not installed already
 if !isdirectory(glob(s:deinroot))
+  " check for missing dependencies
+  s:missing_deps = []
   for s:dep in ['git', 'node', 'npm']
     if !executable(s:dep)
-      echoerr 'Missing required dependency: ' . s:dep
-      finish
+      call add(s:missing_deps, s:dep)
     endif
   endfor
+  if len(s:missing_deps)
+    echoerr 'Missing dependencies: ' . join(s:missing_deps, ', ')
+    finish
+  endif
+
   echom 'Installing dein'
   execute '!git clone https://github.com/Shougo/dein.vim ' . s:deindir
 endif
