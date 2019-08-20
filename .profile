@@ -13,9 +13,9 @@ alias rg='rg -p'
 alias less='less -R'
 alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
 
-if [ -x "$(command -v nvim)" ]; then
+if [ -x nvim ]; then
   export EDITOR="$(command -v nvim)"
-elif [ -x "$(command -v vim)" ]; then
+elif [ -x vim ]; then
   export EDITOR="$(command -v vim)"
 else
   export EDITOR="$(command -v vi)"
@@ -23,7 +23,7 @@ fi
 export VENV_DIR="$HOME/.local/venvs"
 
 # pyenv shims
-if [ -x "$(command -v pyenv)" ]; then
+if [ -x pyenv ]; then
   eval "$(pyenv init -)"
 fi
 
@@ -42,7 +42,7 @@ p() {
     return 1
   fi
 
-  if [ "$VIRTUAL_ENV" != "" ]; then
+  if [ "$VIRTUAL_ENV" != '' ]; then
     >&2 printf "Already in a virtualenv \"$(basename "$VIRTUAL_ENV")\"\n"
     return 2
   fi
@@ -59,24 +59,30 @@ m() {
   "$(pwd)/manage.py" "$@"
 }
 
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
 # fnm
-if [ -x "$(command -v fnm)" ]; then
+if [ -x fnm ]; then
   eval "$(fnm env --multi)"
 fi
 
-export FZF_DEFAULT_COMMAND='rg --files'
+if [ -x rg ]; then
+  export FZF_DEFAULT_COMMAND='rg --files'
+fi
 
 # start eslint daemon
->/dev/null eslint_d start
+if [ -x eslint_d ]; then
+  >/dev/null eslint_d start
+fi
 
-ESLINT_PORT=$(cat ~/.eslint_d | cut -d' ' -f1)
-ESLINT_TOKEN=$(cat ~/.eslint_d | cut -d' ' -f2)
+if [ -x nc ] && [ -f ~/.eslint_d ]; then
+  ESLINT_PORT=$(cat ~/.eslint_d | cut -d' ' -f1)
+  ESLINT_TOKEN=$(cat ~/.eslint_d | cut -d' ' -f2)
 
-eslint() {
-  echo "$ESLINT_TOKEN $(pwd) $@" | nc localhost $ESLINT_PORT
-}
+  eslint() {
+    echo "$ESLINT_TOKEN $(pwd) $@" | nc localhost $ESLINT_PORT
+  }
+fi
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.bin:$PATH"
