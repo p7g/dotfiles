@@ -78,7 +78,7 @@ if dein#load_state(s:deinroot)
   call dein#add('tpope/vim-rsi')
   call dein#add('kchmck/vim-coffee-script')
   call dein#add('tommcdo/vim-lion')
-  call dein#add('neoclide/coc.nvim', {'rev': '*', 'build': './install.sh'})
+  call dein#add('neoclide/coc.nvim', {'rev': 'release'})
   call dein#add('tpope/vim-dadbod')
   call dein#add('sbdchd/neoformat')
 
