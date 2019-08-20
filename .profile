@@ -61,7 +61,7 @@ m() {
 
 # fnm
 if [ -x "$(command -v fnm)" ]; then
-  eval "$(fnm env --multi)" &
+  eval "$(fnm env --multi)"
 fi
 
 if [ -x "$(command -v rg)" ]; then
@@ -70,7 +70,7 @@ fi
 
 # start eslint daemon
 if [ -x "$(command -v eslint_d)" ]; then
-  >/dev/null eslint_d start &
+  >/dev/null eslint_d start
 fi
 
 if [ -x "$(command -v nc)" ] && [ -f ~/.eslint_d ]; then
