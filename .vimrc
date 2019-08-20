@@ -52,7 +52,7 @@ let s:deindir = s:joinpaths(s:deinroot, 'repos', 'github.com', 'Shougo', 'dein.v
 if !isdirectory(glob(s:deinroot))
   for s:dep in ['git', 'node', 'npm']
     if !executable(s:dep)
-      normal q
+      execute ':q'
     endif
   endfor
   echom 'Installing dein'
