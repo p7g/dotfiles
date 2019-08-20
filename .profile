@@ -13,9 +13,9 @@ alias rg='rg -p'
 alias less='less -R'
 alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
 
-if [ -x nvim ]; then
+if [ -x "$(command -v nvim)" ]; then
   export EDITOR="$(command -v nvim)"
-elif [ -x vim ]; then
+elif [ -x "$(command -v vim)" ]; then
   export EDITOR="$(command -v vim)"
 else
   export EDITOR="$(command -v vi)"
@@ -23,7 +23,7 @@ fi
 export VENV_DIR="$HOME/.local/venvs"
 
 # pyenv shims
-if [ -x pyenv ]; then
+if [ -x "$(command -v pyenv)" ]; then
   eval "$(pyenv init -)"
 fi
 
@@ -60,20 +60,20 @@ m() {
 }
 
 # fnm
-if [ -x fnm ]; then
-  eval "$(fnm env --multi)"
+if [ -x "$(command -v fnm)" ]; then
+  eval "$(fnm env --multi)" &
 fi
 
-if [ -x rg ]; then
+if [ -x "$(command -v rg)" ]; then
   export FZF_DEFAULT_COMMAND='rg --files'
 fi
 
 # start eslint daemon
-if [ -x eslint_d ]; then
-  >/dev/null eslint_d start
+if [ -x "$(command -v eslint_d)" ]; then
+  >/dev/null eslint_d start &
 fi
 
-if [ -x nc ] && [ -f ~/.eslint_d ]; then
+if [ -x "$(command -v nc)" ] && [ -f ~/.eslint_d ]; then
   ESLINT_PORT=$(cat ~/.eslint_d | cut -d' ' -f1)
   ESLINT_TOKEN=$(cat ~/.eslint_d | cut -d' ' -f2)
 
