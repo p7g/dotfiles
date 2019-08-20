@@ -52,7 +52,8 @@ let s:deindir = s:joinpaths(s:deinroot, 'repos', 'github.com', 'Shougo', 'dein.v
 if !isdirectory(glob(s:deinroot))
   for s:dep in ['git', 'node', 'npm']
     if !executable(s:dep)
-      execute ':q'
+      echoerr 'Missing required dependency: ' . s:dep
+      finish
     endif
   endfor
   echom 'Installing dein'
