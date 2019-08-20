@@ -50,6 +50,11 @@ let s:deinroot = s:joinpaths($HOME, '.cache', 'dein')
 let s:deindir = s:joinpaths(s:deinroot, 'repos', 'github.com', 'Shougo', 'dein.vim')
 " install dein if it's not installed already
 if !isdirectory(glob(s:deinroot))
+  for l:dep in ['git', 'node', 'npm']
+    if !executable(l:dep)
+      normal q
+    endif
+  endfor
   echom 'Installing dein'
   execute '!git clone https://github.com/Shougo/dein.vim ' . s:deindir
 endif
