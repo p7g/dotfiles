@@ -1,17 +1,8 @@
 #!/usr/bin/env bash
 
-alias ll='ls -l'
-alias la='ls -la'
-
-alias grn='grep -rn'
-
-alias d='docker-compose down'
-alias u='docker-compose up'
-alias ud='docker-compose up -d'
-
-alias rg='rg -p'
-alias less='less -R'
-alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.bin:$PATH"
 
 if [ -x "$(command -v nvim)" ]; then
   export EDITOR="$(command -v nvim)"
@@ -82,7 +73,15 @@ if [ -x "$(command -v nc)" ] && [ -f ~/.eslint_d ]; then
   }
 fi
 
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+alias ll='ls -l'
+alias la='ls -la'
 
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.bin:$PATH"
+alias grn='grep -rn'
+
+alias d='docker-compose down'
+alias u='docker-compose up'
+alias ud='docker-compose up -d'
+
+alias rg='rg -p'
+alias less='less -R'
+alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
