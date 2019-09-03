@@ -57,3 +57,5 @@ export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 mcd() {
   mkdir -p -- "$1" && cd -P -- "$1"
 }
+
+export EDITOR=$(command -v nvim)
