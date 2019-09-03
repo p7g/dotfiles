@@ -135,7 +135,7 @@ set background=light
 colorscheme bow-wob
 
 if has('gui') && !has('nvim')
-  set guifont=IBMPlexMono-Text:h15
+  set guifont=IBMPlexMono-Text:h19
 endif
 
 set autoindent
