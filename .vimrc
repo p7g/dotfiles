@@ -75,6 +75,7 @@ if dein#load_state(s:deinroot)
   call dein#add('pgdouyon/vim-yin-yang')
   call dein#add('sansbrina/vim-garbage-oracle')
   call dein#add('pbrisbin/vim-colors-off')
+  call dein#add('owickstrom/vim-colors-paramount')
   call dein#add('p7g/vim-bow-wob')
 
   call dein#add('tpope/vim-sleuth')
