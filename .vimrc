@@ -330,8 +330,8 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 nmap <leader>rn <Plug>(coc-rename)
 nnoremap <silent> K :call <SID>show_documentation()<CR>
-xmap <leader>f <Plug>(coc-format-selected)
-nmap <leader>f :call CocAction('format')<CR>
+xmap <silent> <leader>f <Plug>(coc-format-selected)
+nmap <silent> <leader>f :call CocAction('format')<CR>
 nmap <silent> <TAB> <Plug>(coc-range-select)
 xmap <silent> <TAB> <Plug>(coc-range-select)
 xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
