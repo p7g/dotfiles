@@ -69,16 +69,13 @@ endif
 let &runtimepath .= ',' . s:deindir
 if dein#load_state(s:deinroot)
   call dein#begin(s:deinroot)
-
-  " Let dein manage dein
-  " Required:
   call dein#add(s:deindir)
 
-  " Add or remove your plugins here like this:
   call dein#add('dim13/gocode.vim')
   call dein#add('pgdouyon/vim-yin-yang')
   call dein#add('sansbrina/vim-garbage-oracle')
   call dein#add('pbrisbin/vim-colors-off')
+  call dein#add('p7g/vim-bow-wob')
 
   call dein#add('tpope/vim-sleuth')
   call dein#add('tpope/vim-surround')
@@ -94,7 +91,6 @@ if dein#load_state(s:deinroot)
   call dein#add('tpope/vim-dadbod')
   call dein#add('sbdchd/neoformat')
 
-  " Required:
   call dein#end()
   call dein#save_state()
 endif
@@ -135,7 +131,7 @@ syntax on
 
 """ colorscheme configuration
 set background=light
-colorscheme yang
+colorscheme bow-wob
 
 if has('gui') && !has('nvim')
   set guifont=IBMPlexMono-Text:h15
@@ -280,6 +276,12 @@ nnoremap <leader>src :split  $MYVIMRC<CR>
 nnoremap <leader>rc  :edit   $MYVIMRC<CR>
 " source vimrc quickly
 nnoremap <leader>st :source $MYVIMRC<CR>
+
+function! SynGroup()
+  let l:s = synID(line('.'), col('.'), 1)
+  echo synIDattr(l:s, 'name') . ' -> ' . synIDattr(synIDtrans(l:s), 'name')
+endfun
+command! SynGroup :call SynGroup()
 
 " automatically change to non-relative numbers when not active buffer
 augroup numbertoggle
