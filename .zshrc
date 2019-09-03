@@ -43,25 +43,28 @@ dark_exit_code() {
   fi
 }
 
-function zle-line-init zle-keymap-select {
-  VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]% %{$reset_color%}"
-  export RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $EPS1"
-  zle reset-prompt
+bindkey -e
+
+branch() {
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    if ! git diff --quiet; then
+      dirty='*'
+    fi
+    echo "$(git rev-parse --abbrev-ref HEAD)$dirty"
+  fi
 }
 
-setopt PROMPT_SUBST
-bindkey -v
-export KEYTIMEOUT=1
-zle -N zle-line-init
-zle -N zle-keymap-select
-
-# export PS1='%(?..%? )%1~ %# '
-export PS1='$(dark_exit_code "$?") $(short_dir "$PWD") $(bold_start)%#$(bold_end) '
+export PS1='%(?..%S %? %s) %1~ %# '
+# export RPROMPT='$(_git_prompt)'
 
 sp() {
   source "$HOME/.profile"
 }
 
+sp
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+
+export PATH="$HOME/.cargo/bin:$PATH"
