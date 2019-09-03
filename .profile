@@ -13,11 +13,6 @@ else
 fi
 export VENV_DIR="$HOME/.local/venvs"
 
-# pyenv shims
-if [ -x "$(command -v pyenv)" ]; then
-  eval "$(pyenv init -)"
-fi
-
 rgl() {
   if [[ -t 1 ]]; then
     rg -p "$@" | less -M +Gg
@@ -50,28 +45,69 @@ m() {
   "$(pwd)/manage.py" "$@"
 }
 
-# fnm
-if [ -x "$(command -v fnm)" ]; then
-  eval "$(fnm env --multi)"
-fi
-
 if [ -x "$(command -v rg)" ]; then
   export FZF_DEFAULT_COMMAND='rg --files'
 fi
 
-# start eslint daemon
-if [ -x "$(command -v eslint_d)" ]; then
-  >/dev/null eslint_d start
+. "$HOME/.asdf/asdf.sh"
+
+# if the terminal supports color...
+if [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; then
+
+  # make command output colorful
+  if ls --color=auto -d / >/dev/null 2>&1; then
+    ls() { command ls --color=auto "$@"; }
+  fi
+  if grep --color=auto -q X '<<<X' 2>/dev/null; then
+    grep() { command grep --color=auto "$@"; }
+  fi
+  if ggrep --color=auto -q X '<<<X' 2>/dev/null; then
+    ggrep() { command ggrep --color=auto "$@"; }
+  fi
+
 fi
 
-if [ -x "$(command -v nc)" ] && [ -f ~/.eslint_d ]; then
-  ESLINT_PORT=$(cat ~/.eslint_d | cut -d' ' -f1)
-  ESLINT_TOKEN=$(cat ~/.eslint_d | cut -d' ' -f2)
+# find escape sequence to change terminal window title
+case "$TERM" in
+  (xterm|xterm[+-]*|gnome|gnome[+-]*|putty|putty[+-]*)
+    _tsl='\033]0;' _fsl='\033\\' ;;
+  (cygwin)
+    _tsl='\033];' _fsl='\a' ;;
+  (*)
+    _tsl=$( (tput tsl 0; echo) 2>/dev/null |
+    sed -e 's;\\;\\\\;g' -e 's;;\\033;g' -e 's;;\\a;g' -e 's;%;%%;g')
+    _fsl=$( (tput fsl  ; echo) 2>/dev/null |
+    sed -e 's;\\;\\\\;g' -e 's;;\\033;g' -e 's;;\\a;g' -e 's;%;%%;g') ;;
+esac
+# if terminal window title can be changed...
+if [ "$_tsl" ] && [ "$_fsl" ]; then
 
-  eslint() {
-    echo "$ESLINT_TOKEN $(pwd) $@" | nc localhost $ESLINT_PORT
+  # set terminal window title on each prompt
+  _set_term_title()
+  if [ -t 2 ]; then
+    printf "$_tsl"'%s@%s:%s'"$_fsl" "${LOGNAME}" "${HOSTNAME%%.*}" \
+      "${${PWD:/$HOME/\~}/#$HOME\//\~\/}" >&2
+  fi
+  PROMPT_COMMAND=("$PROMPT_COMMAND" '_set_term_title') # for bash and yash
+  precmd() { eval "$PROMPT_COMMAND"; } # for zsh
+
+  # reset window title when changing host or user
+  ssh() {
+    if [ -t 2 ]; then printf "$_tsl"'ssh %s'"$_fsl" "$*" >&2; fi
+    command ssh "$@"
   }
+  su() {
+    if [ -t 2 ]; then printf "$_tsl"'su %s'"$_fsl" "$*" >&2; fi
+    command su "$@"
+  }
+  sudo() {
+    if [ -t 2 ]; then printf "$_tsl"'sudo %s'"$_fsl" "$*" >&2; fi
+    command sudo "$@"
+  }
+
 fi
+
+alias source='.'
 
 alias ll='ls -l'
 alias la='ls -la'
