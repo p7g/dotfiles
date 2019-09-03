@@ -5,7 +5,7 @@ set --brace-expand
 set --extended-glob
 
 # don't implicitly expand non-existent variables to empty strings
-set --no-unset
+set --unset
 
 # if yash is built with command history enabled...
 if command --identify --builtin-command history >/dev/null; then
