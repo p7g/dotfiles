@@ -278,7 +278,7 @@ function! s:DiffWithSaved()
         \ 'readonly ' .
         \ 'filetype=' . l:filetype
 endfunction
-command! D call s:DiffWithSaved()
+command! DiffWithSaved call s:DiffWithSaved()
 
 " <leader>b shows current buffers
 nnoremap <leader>b :buffers<CR>
