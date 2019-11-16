@@ -13,6 +13,7 @@ else
 fi
 export VENV_DIR="$HOME/.local/venvs"
 
+# pipe ripgrep output into less
 rgl() {
   if [[ -t 1 ]]; then
     rg -p "$@" | less -M +Gg
@@ -22,6 +23,7 @@ rgl() {
   return $?
 }
 
+# source a virtualenv
 p() {
   if [ "$#" -ne 1 ]; then
     >&2 printf "Expected 1 argument\n"
@@ -41,6 +43,7 @@ p() {
   source "$VENV_DIR/$1/bin/activate"
 }
 
+# shorthand for django ./manage.py
 m() {
   "$(pwd)/manage.py" "$@"
 }
@@ -121,3 +124,8 @@ alias ud='docker-compose up -d'
 alias rg='rg -p'
 alias less='less -R'
 alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
+
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.bin:$PATH"
+
+. $HOME/.asdf/asdf.sh
