@@ -66,31 +66,46 @@ if !isdirectory(glob(s:deinroot))
   execute '!git clone https://github.com/Shougo/dein.vim ' . s:deindir
 endif
 
+let g:colorschemes = [
+      \ 'dim13/gocode.vim',
+      \ 'pgdouyon/vim-yin-yang',
+      \ 'sansbrina/vim-garbage-oracle',
+      \ 'pbrisbin/vim-colors-off',
+      \ 'owickstrom/vim-colors-paramount',
+      \ 'p7g/vim-bow-wob',
+      \ 'junegunn/seoul256.vim',
+      \ ]
+
+let g:plugins = [
+      \ 'tpope/vim-sleuth',
+      \ 'tpope/vim-surround',
+      \ 'tpope/vim-fugitive',
+      \ 'tpope/vim-rsi',
+      \ 'tpope/vim-dadbod',
+      \ 'sheerun/vim-polyglot',
+      \ 'editorconfig/editorconfig-vim',
+      \ ['junegunn/fzf', {'build': './install --all'}],
+      \ 'junegunn/fzf.vim',
+      \ 'kchmck/vim-coffee-script',
+      \ 'tommcdo/vim-lion',
+      \ ['neoclide/coc.nvim', {'rev': 'release'}],
+      \ 'sbdchd/neoformat',
+      \ 'vim-perl/vim-perl6',
+      \ ]
+
 let &runtimepath .= ',' . s:deindir
 if dein#load_state(s:deinroot)
   call dein#begin(s:deinroot)
   call dein#add(s:deindir)
 
-  call dein#add('dim13/gocode.vim')
-  call dein#add('pgdouyon/vim-yin-yang')
-  call dein#add('sansbrina/vim-garbage-oracle')
-  call dein#add('pbrisbin/vim-colors-off')
-  call dein#add('owickstrom/vim-colors-paramount')
-  call dein#add('p7g/vim-bow-wob')
-
-  call dein#add('tpope/vim-sleuth')
-  call dein#add('tpope/vim-surround')
-  call dein#add('sheerun/vim-polyglot')
-  call dein#add('editorconfig/editorconfig-vim')
-  call dein#add('junegunn/fzf', {'build': './install --all'})
-  call dein#add('junegunn/fzf.vim')
-  call dein#add('tpope/vim-fugitive')
-  call dein#add('tpope/vim-rsi')
-  call dein#add('kchmck/vim-coffee-script')
-  call dein#add('tommcdo/vim-lion')
-  call dein#add('neoclide/coc.nvim', {'rev': 'release'})
-  call dein#add('tpope/vim-dadbod')
-  call dein#add('sbdchd/neoformat')
+  for s:plugin in g:colorschemes + g:plugins
+    if type(s:plugin) == v:t_list
+      let [s:name, s:options] = s:plugin
+      call dein#add(s:name, s:options)
+    else
+      call dein#add(s:plugin)
+    endif
+  endfor
 
   call dein#end()
   call dein#save_state()
@@ -132,7 +147,7 @@ syntax on
 
 """ colorscheme configuration
 set background=light
-colorscheme bow-wob
+colorscheme seoul256-light
 
 if has('gui') && !has('nvim')
   set guifont=IBMPlexMono-Text:h19
