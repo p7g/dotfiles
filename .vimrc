@@ -73,7 +73,14 @@ let g:colorschemes = [
       \ 'pbrisbin/vim-colors-off',
       \ 'owickstrom/vim-colors-paramount',
       \ 'p7g/vim-bow-wob',
+      \ 'jeffkreeftmeijer/vim-dim',
+      \ 'noahfrederick/vim-noctu',
+      \ 'fenetikm/falcon',
+      \ 'challenger-deep-theme/vim',
+      \ 'djjcast/mirodark',
       \ 'junegunn/seoul256.vim',
+      \ 'rakr/vim-two-firewatch',
+      \ 'whatyouhide/vim-gotham',
       \ ]
 
 let g:plugins = [
@@ -82,6 +89,8 @@ let g:plugins = [
       \ 'tpope/vim-fugitive',
       \ 'tpope/vim-rsi',
       \ 'tpope/vim-dadbod',
+      \ 'tpope/vim-repeat',
+      \ 'tpope/vim-abolish',
       \ 'sheerun/vim-polyglot',
       \ 'editorconfig/editorconfig-vim',
       \ ['junegunn/fzf', {'build': './install --all'}],
@@ -121,6 +130,7 @@ function! CleanPlugins()
     call delete(fnameescape(l:path), 'rf')
   endfor
 endfunction
+command! CleanPlugins :call CleanPlugins()
 
 let s:coc_extensions = [
       \ 'coc-json',
@@ -134,6 +144,7 @@ let s:coc_extensions = [
       \ 'coc-vimlsp',
       \ 'coc-prettier',
       \ 'coc-tabnine',
+      \ 'coc-rls',
       \ ]
 
 function! InstallCocExtensions()
@@ -230,6 +241,14 @@ nnoremap <silent> <C-Down> :resize -5<CR>
 nnoremap <silent> <C-Left> :vertical resize -5<CR>
 nnoremap <silent> <C-Right> :vertical resize +5<CR>
 
+" use magic regex
+nnoremap / /\v
+vnoremap / /\v
+cnoremap %s/ %smagic/
+cnoremap \>s/ \>smagic/
+nnoremap :g/ :g/\v
+nnoremap :g// :g//
+
 " <leader>ts removes trailing whitespace
 nnoremap <silent> <leader>ts :%s/\s\+$//ge<CR>
 
@@ -324,15 +343,22 @@ augroup filetype_php
         \ . 'eval($code);'<CR>
 augroup END
 
+augroup filetype_python
+  autocmd!
+  " run the current file/selection with <localleader>r
+  autocmd FileType python noremap <localleader>r :w !python -<CR>
+augroup END
+
 augroup comment_textwidth
   autocmd!
   " set the textwidth to the value of colorcolumn when in a comment
-  autocmd TextChanged,TextChangedI * :call s:AdjustTextWidth()
+  autocmd TextChanged,TextChangedI * :call AdjustTextWidth()
 augroup END
 
-function! s:AdjustTextWidth() abort
+let g:comment_width = 80
+function! AdjustTextWidth() abort
   let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
-  let &textwidth = syn_element =~? 'comment' ? &cc : 0
+  let &textwidth = syn_element =~? 'comment' ? g:comment_width : 0
 endfunction
 
 " coc config
@@ -345,18 +371,17 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 nmap <leader>rn <Plug>(coc-rename)
+nmap <leader>a :<C-u>CocList outline<CR>
+nmap <leader>q :<C-u>CocList -I symbols<CR>
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 xmap <silent> <leader>f <Plug>(coc-format-selected)
 nmap <silent> <leader>f :call CocAction('format')<CR>
-nmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
 nmap <silent> <C-k> <Plug>(coc-diagnostic-info)
 
-augroup cocsettings
-  autocmd!
-  autocmd CursorHold * silent call CocActionAsync('highlight')
-augroup END
+" augroup cocsettings
+"   autocmd!
+"   autocmd CursorHold * silent call CocActionAsync('highlight')
+" augroup END
 
 function! s:show_documentation()
   if index(['vim', 'help'], &filetype) >= 0
@@ -401,3 +426,6 @@ let g:neoformat_python_black = {
       \ }
 
 let g:neoformat_enabled_python = ['black']
+
+autocmd BufRead *.variables set filetype=less
+autocmd BufRead .eslintrc set filetype=json5
