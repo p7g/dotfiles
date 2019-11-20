@@ -110,6 +110,10 @@ if [ "$_tsl" ] && [ "$_fsl" ]; then
 
 fi
 
+if ! command -v sudoedit >/dev/null; then
+  alias sudoedit='sudo -e'
+fi
+
 alias source='.'
 
 alias ll='ls -l'
@@ -117,13 +121,14 @@ alias la='ls -la'
 
 alias grn='grep -rn'
 
-alias d='docker-compose down'
-alias u='docker-compose up'
-alias ud='docker-compose up -d'
+alias dc='docker-compose'
 
 alias rg='rg -p'
+alias rgp='rg --pcre2'
 alias less='less -R'
 alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
+
+alias py-json='python -c "import sys, json; print(json.dumps(eval(sys.stdin.read())))"'
 
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.bin:$PATH"
