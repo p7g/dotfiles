@@ -100,6 +100,8 @@ let g:plugins = [
       \ ['neoclide/coc.nvim', {'rev': 'release'}],
       \ 'sbdchd/neoformat',
       \ 'vim-perl/vim-perl6',
+      \ 'gu-fan/riv.vim',
+      \ 'gu-fan/InstantRst',
       \ ]
 
 let &runtimepath .= ',' . s:deindir
@@ -145,6 +147,9 @@ let s:coc_extensions = [
       \ 'coc-prettier',
       \ 'coc-tabnine',
       \ 'coc-rls',
+      \ 'coc-clock',
+      \ 'coc-terminal',
+      \ 'coc-calc',
       \ ]
 
 function! InstallCocExtensions()
@@ -349,14 +354,30 @@ augroup filetype_python
   autocmd FileType python noremap <localleader>r :w !python -<CR>
 augroup END
 
+augroup filetype_ruby
+  autocmd!
+  " run the current file/selection with <localleader>r
+  autocmd FileType ruby noremap <localleader>r :w !ruby -<CR>
+augroup END
+
+augroup filetype_julia
+  autocmd!
+  " run the current file/selection with <localleader>r
+  autocmd FileType julia noremap <localleader>r :w !julia<CR>
+augroup END
+
 augroup comment_textwidth
   autocmd!
   " set the textwidth to the value of colorcolumn when in a comment
+  autocmd FileType markdown,rst let g:dontAdjustTextWidth = 1
   autocmd TextChanged,TextChangedI * :call AdjustTextWidth()
 augroup END
 
 let g:comment_width = 80
 function! AdjustTextWidth() abort
+  if exists('g:dontAdjustTextWidth')
+    return
+  endif
   let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
   let &textwidth = syn_element =~? 'comment' ? g:comment_width : 0
 endfunction
@@ -377,6 +398,10 @@ nnoremap <silent> K :call <SID>show_documentation()<CR>
 xmap <silent> <leader>f <Plug>(coc-format-selected)
 nmap <silent> <leader>f :call CocAction('format')<CR>
 nmap <silent> <C-k> <Plug>(coc-diagnostic-info)
+nmap <silent> <leader>clock :ClockToggle<CR>
+nmap <silent> <leader>calc <Plug>(coc-calc-result-replace)
+nmap <silent> <leader>tt <Plug>(coc-terminal-toggle)
+nmap <silent> <leader>td :CocCommand terminal.Destroy<CR>
 
 " augroup cocsettings
 "   autocmd!
@@ -391,6 +416,16 @@ function! s:show_documentation()
   endif
 endfunction
 
+let s:clockOn = 0
+function! s:toggleClock()
+  if s:clockOn
+    CocCommand clock.disable
+  else
+    CocCommand clock.enable
+  endif
+  let s:clockOn = !s:clockOn
+endfunction
+command! ClockToggle call s:toggleClock()
 
 " FZF mappings
 nnoremap <silent> <C-P> :Files<CR>
