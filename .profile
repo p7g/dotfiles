@@ -30,10 +30,10 @@ p() {
     return 1
   fi
 
-  if [ "$VIRTUAL_ENV" != '' ]; then
-    >&2 printf "Already in a virtualenv \"$(basename "$VIRTUAL_ENV")\"\n"
-    return 2
-  fi
+  # if [ "$VIRTUAL_ENV" != '' ]; then
+  #   >&2 printf "Already in a virtualenv \"$(basename "$VIRTUAL_ENV")\"\n"
+  #   return 2
+  # fi
 
   if ! [ -d "$VENV_DIR/$1" ]; then
     >&2 printf "Virtualenv \"$1\" not found\n"
@@ -48,8 +48,40 @@ m() {
   "$(pwd)/manage.py" "$@"
 }
 
+myvi() {
+  local ocols=$(tput cols)
+  stty columns 160
+  \vi "$@"
+  stty columns $ocols
+}
+
+tmux-session() {
+  if tmux has-session -t fellow; then
+    tmux attach-session -t fellow
+    return $?
+  fi
+
+  tmux new-session -c "$HOME/code/fellow/web" -s fellow -n client 'npm run dev' \; \
+    new-window -n server \; \
+    send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
+    send-keys 'dc up -d --scale celery=0 && m runserver 8080' C-m \; \
+    new-window -n celery \; \
+    send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
+    send-keys 'while [ -z "$(docker-compose ps -q db)" ] || [ -z "$(docker ps -q --no-trunc | grep "$(docker-compose ps -q db)")" ]; do' \
+              '  sleep 1; ' \
+              'done; ' \
+              'celery worker --app=server.fellow.celery --loglevel debug --queues=celery,realtime,background --beat' C-m \; \
+    new-window \; \
+    send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
+    new-window -n nvim \; \
+    send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
+    send-keys 'nvim' C-m
+}
+
+alias vi="myvi"
+
 if [ -x "$(command -v rg)" ]; then
-  export FZF_DEFAULT_COMMAND='rg --files'
+  export FZF_DEFAULT_COMMAND=$'rg --glob \'!**/node_modules\' --files'
 fi
 
 . "$HOME/.asdf/asdf.sh"
@@ -123,7 +155,7 @@ alias grn='grep -rn'
 
 alias dc='docker-compose'
 
-alias rg='rg -p'
+alias rg=$'rg --glob \'!**/node_modules\''
 alias rgp='rg --pcre2'
 alias less='less -R'
 alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
@@ -132,5 +164,6 @@ alias py-json='python -c "import sys, json; print(json.dumps(eval(sys.stdin.read
 
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.bin:$PATH"
+export PATH="$HOME/bin:$PATH"
 
 . $HOME/.asdf/asdf.sh

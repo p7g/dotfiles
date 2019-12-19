@@ -65,7 +65,7 @@ sp
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+# export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="/usr/local/opt/ruby/bin:$PATH"
