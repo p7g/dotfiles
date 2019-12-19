@@ -30,6 +30,13 @@ function! s:joinpaths(...)
   return join(a:000, s:pathsep)
 endfunction
 
+let s:current_dir = fnamemodify(resolve(expand('<sfile>')), ':p:h')
+function! s:include(...)
+  for l:path in a:000
+    execute 'source ' . s:joinpaths(s:current_dir, l:path)
+  endfor
+endfunction
+
 " try to figure out where the .vim equivalent directory is
 let $vimdir = resolve(expand('<sfile>:p:h'))
 if $vimdir ==# $HOME
@@ -66,6 +73,11 @@ if !isdirectory(glob(s:deinroot))
   execute '!git clone https://github.com/Shougo/dein.vim ' . s:deindir
 endif
 
+call s:include(
+      \ 'vim_config/settings.vim',
+      \ 'vim_config/bindings.vim',
+      \ )
+
 let g:colorschemes = [
       \ 'dim13/gocode.vim',
       \ 'pgdouyon/vim-yin-yang',
@@ -81,6 +93,9 @@ let g:colorschemes = [
       \ 'junegunn/seoul256.vim',
       \ 'rakr/vim-two-firewatch',
       \ 'whatyouhide/vim-gotham',
+      \ 'arzg/vim-substrata',
+      \ 'relastle/bluewery.vim',
+      \ 'ludokng/vim-odyssey',
       \ ]
 
 let g:plugins = [
@@ -102,6 +117,7 @@ let g:plugins = [
       \ 'vim-perl/vim-perl6',
       \ 'gu-fan/riv.vim',
       \ 'gu-fan/InstantRst',
+      \ 'neovim/nvim-lsp',
       \ ]
 
 let &runtimepath .= ',' . s:deindir
@@ -145,7 +161,6 @@ let s:coc_extensions = [
       \ 'coc-git',
       \ 'coc-vimlsp',
       \ 'coc-prettier',
-      \ 'coc-tabnine',
       \ 'coc-rls',
       \ 'coc-clock',
       \ 'coc-terminal',
@@ -162,166 +177,20 @@ filetype plugin indent on
 syntax on
 
 """ colorscheme configuration
-set background=light
-colorscheme seoul256-light
+" set background=dark
+colorscheme odyssey
 
-if has('gui') && !has('nvim')
-  set guifont=IBMPlexMono-Text:h19
-endif
-
-set autoindent
-set autoread   " reload files when changed externally
-set backupdir=$vimdir/backups
-set belloff=all
-set colorcolumn=160
-set directory=$vimdir/tmp
-set expandtab
-set exrc
-set grepprg=rg\ --vimgrep
-set guioptions=
-set ignorecase
-set incsearch
-set laststatus=2
-set list
-set listchars=tab:»\ ,nbsp:~,trail:·,space:·,eol:¬,extends:…,precedes:…
-set matchtime=1
-set nohidden
-set nospell
-set novisualbell
-set number
-set numberwidth=4
-set relativenumber
-set secure
-set shiftround
-set shiftwidth=2
-set signcolumn=yes
-set smartcase
-set smartindent
-set splitbelow
-set splitright
-set tabstop=4
-set termguicolors
-set undodir=$vimdir/undo
-set undofile
-set updatetime=300
-set wrap
-set writebackup
-
-set statusline=%#LineNr#  " match number column hightlighting
-set statusline+=\         " space before any text
-set statusline+=%t        " filename, no directory
-set statusline+=\         " space
-set statusline+=%m        " modified flag
-set statusline+=%r        " readonly flag
-set statusline+=%h        " helpfile flag
-set statusline+=%w        " preview window flag
-set statusline+=%q        " quickfix window flag
-set statusline+=\ %{coc#status()}
-set statusline+=%{get(b:,'coc_current_function','')}
-set statusline+=%=        " switch to right side
-set statusline+=%P        " percentage through file
-set statusline+=\         " space after percentage
-
-let g:mapleader = '\'
-let g:maplocalleader = '|'
-
-" remap hjkl for Colemak (without using other keys)
-noremap h k
-noremap k j
-noremap j h
-noremap <C-w>h <C-w>k
-noremap <C-w>k <C-w>j
-noremap <C-w>j <C-w>h
-
-command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" ' . shellescape(<q-args>) . '| tr -d "\017"', 1, <bang>0)
+command! -bang -nargs=* Find call fzf#vim#grep(
+      \   'rg --column --line-number --no-heading --fixed-strings '
+      \   . '--ignore-case --follow --glob ''!**/.git'' --glob ''!**/node_modules'' '
+      \   . '--color ''always'' '
+      \   . shellescape(<q-args>)
+      \   . ' | tr -d "\017"',
+      \   1,
+      \   <bang>0
+      \ )
+noremap <C-f> :Find 
 noremap <silent> <C-p> :FZF<CR>
-
-" press enter or shift enter to add a new line above/below
-nnoremap <CR> o<Esc>
-nnoremap <S-CR> O<Esc>
-
-" resize split with ctrl-arrows
-nnoremap <silent> <C-Up> :resize +5<CR>
-nnoremap <silent> <C-Down> :resize -5<CR>
-nnoremap <silent> <C-Left> :vertical resize -5<CR>
-nnoremap <silent> <C-Right> :vertical resize +5<CR>
-
-" use magic regex
-nnoremap / /\v
-vnoremap / /\v
-cnoremap %s/ %smagic/
-cnoremap \>s/ \>smagic/
-nnoremap :g/ :g/\v
-nnoremap :g// :g//
-
-" <leader>ts removes trailing whitespace
-nnoremap <silent> <leader>ts :%s/\s\+$//ge<CR>
-
-" clear search highlight with <leader>space
-nnoremap <silent> <leader><space> :let @/=""<CR>
-
-" o/O
-"
-" Start insert mode with [count] blank lines. The default behaviour repeats
-" the insertion [count] times, which is not so useful.
-"
-" Credit: https://stackoverflow.com/a/27820229
-function! s:NewLineInsertExpr(isUndoCount, command)
-  if !v:count
-    return a:command
-  endif
-
-  let l:reverse = {'o': 'O', 'O': 'o'}
-  " First insert a temporary '$' marker at the next line (which is necessary
-  " to keep the indent from the current line), then insert <count> empty lines
-  " in between. Finally, go back to the previously inserted temporary '$' and
-  " enter insert mode by substituting this character.
-  " Note: <C-\><C-n> prevents a move back into insert mode when triggered via
-  " |i_CTRL-O|.
-  return (a:isUndoCount && v:count ? "\<C-\>\<C-n>" : '') .
-        \ a:command . "$\<Esc>m`" .
-        \ v:count . l:reverse[a:command] . "\<Esc>" .
-        \ 'g``"_s'
-endfunction
-nnoremap <silent> <expr> o <SID>NewLineInsertExpr(1, 'o')
-nnoremap <silent> <expr> O <SID>NewLineInsertExpr(1, 'O')
-
-
-" diff the current state of a buffer with the most recently saved version of
-" the file
-function! s:DiffWithSaved()
-  let l:filetype = &filetype
-  diffthis
-  vnew | r # | normal! 1Gdd
-  diffthis
-  execute 'setlocal ' .
-        \ 'buftype=nofile ' .
-        \ 'bufhidden=wipe ' .
-        \ 'nobuflisted ' .
-        \ 'noswapfile ' .
-        \ 'readonly ' .
-        \ 'filetype=' . l:filetype
-endfunction
-command! DiffWithSaved call s:DiffWithSaved()
-
-" <leader>b shows current buffers
-nnoremap <leader>b :buffers<CR>
-
-" <leader>c shows positional stats
-nnoremap <leader>c g<C-g>
-
-" open vimrc quickly
-nnoremap <leader>vrc :vsplit $MYVIMRC<CR>
-nnoremap <leader>src :split  $MYVIMRC<CR>
-nnoremap <leader>rc  :edit   $MYVIMRC<CR>
-" source vimrc quickly
-nnoremap <leader>st :source $MYVIMRC<CR>
-
-function! SynGroup()
-  let l:s = synID(line('.'), col('.'), 1)
-  echo synIDattr(l:s, 'name') . ' -> ' . synIDattr(synIDtrans(l:s), 'name')
-endfun
-command! SynGroup :call SynGroup()
 
 " automatically change to non-relative numbers when not active buffer
 augroup numbertoggle
@@ -402,6 +271,12 @@ nmap <silent> <leader>clock :ClockToggle<CR>
 nmap <silent> <leader>calc <Plug>(coc-calc-result-replace)
 nmap <silent> <leader>tt <Plug>(coc-terminal-toggle)
 nmap <silent> <leader>td :CocCommand terminal.Destroy<CR>
+
+" Create mappings for function text object, requires document symbols feature of languageserver.
+xmap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap if <Plug>(coc-funcobj-i)
+omap af <Plug>(coc-funcobj-a)
 
 " augroup cocsettings
 "   autocmd!
