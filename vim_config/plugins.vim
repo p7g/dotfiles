@@ -39,7 +39,6 @@ let s:plugins = [
       \ 'vim-perl/vim-perl6',
       \ 'gu-fan/riv.vim',
       \ 'gu-fan/InstantRst',
-      \ '~/projects/rust-bytecode-vm/vim-plugin',
       \ ]
 
 let s:deinroot = Joinpaths($HOME, '.cache', 'dein')
