@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 let g:mapleader = '\'
 let g:maplocalleader = '|'
 

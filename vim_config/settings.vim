@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 if has('gui') && !has('nvim')
   set guifont=IBMPlexMono-Text:h19
 endif
@@ -61,3 +63,10 @@ set statusline+=%{get(b:,'coc_current_function','')}
 set statusline+=%=        " switch to right side
 set statusline+=%P        " percentage through file
 set statusline+=\         " space after percentage
+
+" automatically change to non-relative numbers when not active buffer
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
