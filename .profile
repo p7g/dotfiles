@@ -160,6 +160,8 @@ alias rgp='rg --pcre2'
 alias less='less -R'
 alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
 
+alias nvim-fast='__VIM_MODE=fast nvim'
+
 alias py-json='python -c "import sys, json; print(json.dumps(eval(sys.stdin.read())))"'
 
 export PATH="$HOME/.cargo/bin:$PATH"
