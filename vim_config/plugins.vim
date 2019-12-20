@@ -1,6 +1,6 @@
 scriptencoding utf-8
 
-let g:colorschemes = [
+let s:colorschemes = [
       \ 'dim13/gocode.vim',
       \ 'pgdouyon/vim-yin-yang',
       \ 'sansbrina/vim-garbage-oracle',
@@ -20,7 +20,7 @@ let g:colorschemes = [
       \ 'ludokng/vim-odyssey',
       \ ]
 
-let g:plugins = [
+let s:plugins = [
       \ 'tpope/vim-sleuth',
       \ 'tpope/vim-surround',
       \ 'tpope/vim-fugitive',
@@ -67,7 +67,7 @@ if dein#load_state(s:deinroot)
   call dein#begin(s:deinroot)
   call dein#add(s:deindir)
 
-  for s:plugin in g:colorschemes + g:plugins
+  for s:plugin in s:colorschemes + s:plugins
     if type(s:plugin) == v:t_list
       let [s:name, s:options] = s:plugin
       call dein#add(s:name, s:options)
