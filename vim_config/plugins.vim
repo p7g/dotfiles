@@ -37,8 +37,6 @@ let s:plugins = [
       \ ['neoclide/coc.nvim', {'rev': 'release'}],
       \ 'sbdchd/neoformat',
       \ 'vim-perl/vim-perl6',
-      \ 'gu-fan/riv.vim',
-      \ 'gu-fan/InstantRst',
       \ ]
 
 let s:deinroot = Joinpaths($HOME, '.cache', 'dein')
@@ -93,4 +91,4 @@ command! CleanPlugins :call CleanPlugins()
 
 """ colorscheme configuration
 set background=dark
-colorscheme odyssey
+colorscheme seoul256-light
