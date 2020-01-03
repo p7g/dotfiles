@@ -45,6 +45,13 @@ set updatetime=300
 set wrap
 set writebackup
 
+fun! CocStatus()
+  if exists('*coc#status')
+    return coc#status()
+  endif
+  return ''
+endfun
+
 set statusline=%#LineNr#  " match number column hightlighting
 set statusline+=\         " space before any text
 set statusline+=%f        " filename, no directory
@@ -54,11 +61,7 @@ set statusline+=%r        " readonly flag
 set statusline+=%h        " helpfile flag
 set statusline+=%w        " preview window flag
 set statusline+=%q        " quickfix window flag
-
-if exists('*coc#status')
-  set statusline+=\ %{coc#status()}
-endif
-
+set statusline+=\ %{CocStatus()}
 set statusline+=%{get(b:,'coc_current_function','')}
 set statusline+=%=        " switch to right side
 set statusline+=%P        " percentage through file

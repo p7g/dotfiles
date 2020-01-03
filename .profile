@@ -61,7 +61,8 @@ tmux-session() {
     return $?
   fi
 
-  tmux new-session -c "$HOME/code/fellow/web" -s fellow -n client 'npm run dev' \; \
+  tmux new-session -c "$HOME/code/fellow/web" -s fellow -n client \; \
+    send-keys 'npm run dev' C-m \; \
     new-window -n server \; \
     send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
     send-keys 'dc up -d --scale celery=0 && m runserver 8080' C-m \; \

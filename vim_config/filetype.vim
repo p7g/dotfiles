@@ -24,10 +24,14 @@ augroup filetype_php
         \ . 'eval($code);'<CR>
 augroup END
 
+" disable changes to indentation settings when opening a python file
+let g:python_recommended_style = 0
 augroup filetype_python
   autocmd!
   " run the current file/selection with <localleader>r
   autocmd FileType python noremap <localleader>r :w !python -<CR>
+  autocmd FileType python setlocal noexpandtab shiftwidth=4 tabstop=4 softtabstop=4
+  autocmd FileType python setlocal formatoptions+=croql
 augroup END
 
 augroup filetype_ruby
@@ -45,13 +49,13 @@ augroup END
 augroup comment_textwidth
   autocmd!
   " set the textwidth to the value of colorcolumn when in a comment
-  autocmd FileType markdown,rst let g:dontAdjustTextWidth = 1
+  autocmd FileType markdown,rst let b:dontAdjustTextWidth = 1
   autocmd TextChanged,TextChangedI * :call AdjustTextWidth()
 augroup END
 
 let g:comment_width = 80
 function! AdjustTextWidth() abort
-  if exists('g:dontAdjustTextWidth')
+  if exists('b:dontAdjustTextWidth')
     return
   endif
   let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
