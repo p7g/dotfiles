@@ -15,6 +15,7 @@ let s:coc_extensions = [
       \ 'coc-clock',
       \ 'coc-terminal',
       \ 'coc-calc',
+      \ 'coc-go',
       \ ]
 
 function! InstallCocExtensions()

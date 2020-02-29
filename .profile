@@ -25,22 +25,18 @@ rgl() {
 
 # source a virtualenv
 p() {
-  if [ "$#" -ne 1 ]; then
-    >&2 printf "Expected 1 argument\n"
-    return 1
+  venv_name=$1
+
+  if [ -z "$1" ]; then
+    venv_name=$(basename $PWD)
   fi
 
-  # if [ "$VIRTUAL_ENV" != '' ]; then
-  #   >&2 printf "Already in a virtualenv \"$(basename "$VIRTUAL_ENV")\"\n"
-  #   return 2
-  # fi
-
-  if ! [ -d "$VENV_DIR/$1" ]; then
+  if ! [ -d "$VENV_DIR/$venv_name" ]; then
     >&2 printf "Virtualenv \"$1\" not found\n"
     return 3
   fi
 
-  source "$VENV_DIR/$1/bin/activate"
+  source "$VENV_DIR/$venv_name/bin/activate"
 }
 
 # shorthand for django ./manage.py
@@ -92,13 +88,13 @@ if [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; then
 
   # make command output colorful
   if ls --color=auto -d / >/dev/null 2>&1; then
-    ls() { command ls --color=auto "$@"; }
+    alias ls='ls --color=auto'
   fi
   if grep --color=auto -q X '<<<X' 2>/dev/null; then
-    grep() { command grep --color=auto "$@"; }
+    alias grep='grep --color=auto'
   fi
   if ggrep --color=auto -q X '<<<X' 2>/dev/null; then
-    ggrep() { command ggrep --color=auto "$@"; }
+    alias ggrep='ggrep --color=auto'
   fi
 
 fi
@@ -161,7 +157,7 @@ alias rgp='rg --pcre2'
 alias less='less -R'
 alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
 
-alias nvim-fast='__VIM_MODE=fast nvim'
+alias fvim='__VIM_MODE=fast nvim'
 
 alias py-json='python -c "import sys, json; print(json.dumps(eval(sys.stdin.read())))"'
 

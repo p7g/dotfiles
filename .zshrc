@@ -67,6 +67,8 @@ sp
 
 # export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 
+export GPG_TTY=$(tty)
+
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 export CXXFLAGS='-stdlib=libc++'

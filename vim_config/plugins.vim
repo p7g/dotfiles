@@ -18,6 +18,7 @@ let s:colorschemes = [
       \ 'arzg/vim-substrata',
       \ 'relastle/bluewery.vim',
       \ 'ludokng/vim-odyssey',
+      \ 'arzg/vim-colors-xcode',
       \ ]
 
 let s:plugins = [
@@ -28,15 +29,14 @@ let s:plugins = [
       \ 'tpope/vim-dadbod',
       \ 'tpope/vim-repeat',
       \ 'tpope/vim-abolish',
-      \ 'sheerun/vim-polyglot',
+      \ ['sheerun/vim-polyglot', {'merged': 0}],
       \ 'editorconfig/editorconfig-vim',
       \ ['junegunn/fzf', {'build': './install --all'}],
       \ 'junegunn/fzf.vim',
-      \ 'kchmck/vim-coffee-script',
       \ 'tommcdo/vim-lion',
       \ ['neoclide/coc.nvim', {'rev': 'release'}],
       \ 'sbdchd/neoformat',
-      \ 'vim-perl/vim-perl6',
+      \ 'jakwings/vim-terra',
       \ ]
 
 let s:deinroot = Joinpaths($HOME, '.cache', 'dein')
