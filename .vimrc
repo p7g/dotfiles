@@ -255,9 +255,7 @@ let s:coc_extensions = [
       \ ]
 
 function! InstallCocExtensions()
-  for l:extension in s:coc_extensions
-    execute 'CocInstall ' . l:extension
-  endfor
+  execute 'CocInstall ' . join(s:coc_extensions, ' ')
 endfunction
 
 nmap <leader>d :CocList diagnostics<CR>
