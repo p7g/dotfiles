@@ -282,7 +282,7 @@ function! s:show_documentation()
   if index(['vim', 'help'], &filetype) >= 0
     execute 'help ' . expand('<cword>')
   else
-    call CocAction('hover')
+    call CocAction('doHover')
   endif
 endfunction
 
