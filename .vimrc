@@ -104,6 +104,9 @@ nnoremap <silent> <C-Right> :vertical resize +5<CR>
 " clear search highlight with <leader>space
 nnoremap <silent> <leader><space> :let @/=""<CR>
 
+" because it's annoying when you press ctrl+space by accident
+inoremap <C-@> <nop>
+noremap <C-@> <nop>
 
 " --- filetype augroups
 "
@@ -121,6 +124,8 @@ augroup END
 
 " disable changes to indentation settings when opening a python file
 let g:python_recommended_style = 0
+let g:python3_host_prog = 'python3.9'
+let g:python_host_prog = 'python2'
 augroup filetype_python
   autocmd!
   " run the current file/selection with <localleader>r
@@ -205,6 +210,9 @@ if empty(glob(s:autoload_path . '/plug.vim'))
   endif
 endif
 
+let g:sunset_latitude = 45
+let g:sunset_longitude = -75
+
 call plug#begin(s:plugged_dir)
 
 for s:plugin in s:colorschemes + s:plugins
@@ -222,19 +230,16 @@ call plug#end()
 " --- colorscheme stuff
 
 set background=light
-colorscheme github
-
-let g:sunset_latitude = 45
-let g:sunset_longitude = -75
+colorscheme gocode
 
 function! Sunset_daytime_callback()
   set background=light
-  colorscheme github
+  colorscheme gocode
 endfunction
 
 function! Sunset_nighttime_callback()
   set background=dark
-  colorscheme github
+  colorscheme xcodedark
 endfunction
 
 
