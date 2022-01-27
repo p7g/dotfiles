@@ -24,28 +24,28 @@ dark_theme() {
   printf "$(dark_theme_start)$@$(dark_theme_end)"
 }
 
-short_dir() {
-  if [ "$1" = "$HOME" ]; then
+short_pwd() {
+  if [ "$PWD" = "$HOME" ]; then
     printf '~'
   else
-    printf "$(basename "$1")"
+    printf "$(basename "$PWD")"
   fi
 }
 
 exit_code() {
-  if [ "$1" -ne '0' ]; then
+  if [ "$?" -ne '0' ]; then
     printf "$1"
   fi
 }
 
 dark_exit_code() {
-  code=$(exit_code $1)
+  code=$(exit_code)
   if [ "$code" != '' ]; then
     printf "$(dark_theme " $code ") "
   fi
 }
 
-export PS1='$(dark_exit_code "$?") $(short_dir "$PWD") $(bold_start)\$$(bold_end) '
+export PS1='$(dark_exit_code) $(short_pwd) $(bold_start)\$$(bold_end) '
 
 # enable arrow keys and all that
 set -o emacs

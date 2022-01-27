@@ -32,16 +32,29 @@ p() {
   fi
 
   if ! [ -d "$VENV_DIR/$venv_name" ]; then
-    >&2 printf "Virtualenv \"$1\" not found\n"
+    >&2 printf "Virtualenv \"$venv_name\" not found\n"
     return 3
   fi
 
   source "$VENV_DIR/$venv_name/bin/activate"
 }
 
+find_managepy() {
+  local cur
+  cur='.'
+  while ! [ -e "$cur/manage.py" ]; do
+    cur="$(realpath "../$cur")"
+    if [ "$cur" = '/' ]; then
+      >&2 echo 'No manage.py found'
+      return 1
+    fi
+  done
+  echo "$cur/manage.py"
+}
+
 # shorthand for django ./manage.py
 m() {
-  "$(pwd)/manage.py" "$@"
+  "$(find_managepy)" "$@"
 }
 
 myvi() {
@@ -51,32 +64,54 @@ myvi() {
   stty columns $ocols
 }
 
-tmux-session() {
-  if tmux has-session -t fellow; then
-    tmux attach-session -t fellow
-    return $?
-  fi
-
-  tmux new-session -c "$HOME/code/fellow/web" -s fellow -n client \; \
-    send-keys 'npm run dev' C-m \; \
-    new-window -n server \; \
-    send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
-    send-keys 'dc up -d --scale celery=0 && m runserver 8080' C-m \; \
-    new-window -n celery \; \
-    send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
-    send-keys 'while [ -z "$(docker-compose ps -q db)" ] || [ -z "$(docker ps -q --no-trunc | grep "$(docker-compose ps -q db)")" ]; do' \
-              '  sleep 1; ' \
-              'done; ' \
-              'celery worker --app=server.fellow.celery --loglevel debug --queues=celery,realtime,background --beat' C-m \; \
-    new-window \; \
-    send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
-    new-window -n nvim \; \
-    send-keys 'cd "$HOME/code/fellow" && p fellow' C-m \; \
-    send-keys 'nvim' C-m
-}
-
 alias vi="myvi"
 
+dcw() {
+  opts=()
+  for c in "$@"; do
+    opts+=("--scale $c=0")
+  done
+  eval "docker-compose up -d ${opts[*]}"
+  return $?
+}
+
+if >/dev/null command -v rpg-cli; then
+  try_unalias() {
+    if alias "$1" >/dev/null; then
+      unalias "$1"
+    fi
+  }
+
+  try_unalias cd
+  alias rpg=rpg-cli
+
+  cd() {
+    rpg-cli cd "$@"
+    builtin cd "$(rpg-cli pwd)"
+  }
+
+  try_unalias ls
+
+  ls() {
+    command ls "$@"
+    if [ $# -eq 0 ]; then
+      rpg-cli cd -f .
+      rpg-cli ls
+    fi
+  }
+
+  battle="rpg-cli cd -f . && rpg-cli battle"
+  alias rm="$battle && rm"
+  alias rmdir="$battle && rmdir"
+  alias mkdir="$battle && mkdir"
+  alias touch="$battle && touch"
+  alias mv="$battle && mv"
+  alias cp="$battle && cp"
+  alias chown="$battle && chown"
+  alias chmod="$battle && chmod"
+fi
+
+export FZF_DEFAULT_OPTS='--color=bw'
 if [ -x "$(command -v rg)" ]; then
   export FZF_DEFAULT_COMMAND=$'rg --glob \'!**/node_modules\' --files'
 fi
@@ -87,9 +122,9 @@ fi
 if [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; then
 
   # make command output colorful
-  if ls --color=auto -d / >/dev/null 2>&1; then
-    alias ls='ls --color=auto'
-  fi
+  # if ls --color=auto -d / >/dev/null 2>&1; then
+  #   alias ls='ls --color=auto'
+  # fi
   if grep --color=auto -q X '<<<X' 2>/dev/null; then
     alias grep='grep --color=auto'
   fi
@@ -164,5 +199,9 @@ alias py-json='python -c "import sys, json; print(json.dumps(eval(sys.stdin.read
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.bin:$PATH"
 export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 . $HOME/.asdf/asdf.sh
+
+# Default WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>'
+export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
