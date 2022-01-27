@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.bin:$PATH"
-
 if [ -x "$(command -v nvim)" ]; then
   export EDITOR="$(command -v nvim)"
 elif [ -x "$(command -v vim)" ]; then
@@ -22,7 +18,7 @@ p() {
   fi
 
   if ! [ -d "$VENV_DIR/$venv_name" ]; then
-    >&2 printf "Virtualenv \"$venv_name\" not found\n"
+    >&2 printf 'Virtualenv "%s" not found\n' "$venv_name"
     return 3
   fi
 
@@ -106,8 +102,6 @@ if >/dev/null command -v rg; then
   export FZF_DEFAULT_COMMAND=$'rg --glob \'!**/node_modules\' --files'
 fi
 
-. "$HOME/.asdf/asdf.sh"
-
 # find escape sequence to change terminal window title
 case "$TERM" in
   (xterm|xterm[+-]*|gnome|gnome[+-]*|putty|putty[+-]*)
@@ -161,11 +155,10 @@ alias fvim='__VIM_MODE=fast nvim'
 alias py-json='python -c "import sys, json; print(json.dumps(eval(sys.stdin.read())))"'
 
 export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.bin:$PATH"
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
-. $HOME/.asdf/asdf.sh
+. "$HOME/.asdf/asdf.sh"
 
 export PATH="/usr/local/opt/llvm/bin:$PATH"
 
