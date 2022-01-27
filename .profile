@@ -13,16 +13,6 @@ else
 fi
 export VENV_DIR="$HOME/.local/venvs"
 
-# pipe ripgrep output into less
-rgl() {
-  if [[ -t 1 ]]; then
-    rg -p "$@" | less -M +Gg
-    return $?
-  fi
-  rg -p "$@"
-  return $?
-}
-
 # source a virtualenv
 p() {
   venv_name=$1
@@ -112,27 +102,11 @@ if >/dev/null command -v rpg-cli; then
 fi
 
 export FZF_DEFAULT_OPTS='--color=bw'
-if [ -x "$(command -v rg)" ]; then
+if >/dev/null command -v rg; then
   export FZF_DEFAULT_COMMAND=$'rg --glob \'!**/node_modules\' --files'
 fi
 
 . "$HOME/.asdf/asdf.sh"
-
-# if the terminal supports color...
-if [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; then
-
-  # make command output colorful
-  # if ls --color=auto -d / >/dev/null 2>&1; then
-  #   alias ls='ls --color=auto'
-  # fi
-  if grep --color=auto -q X '<<<X' 2>/dev/null; then
-    alias grep='grep --color=auto'
-  fi
-  if ggrep --color=auto -q X '<<<X' 2>/dev/null; then
-    alias ggrep='ggrep --color=auto'
-  fi
-
-fi
 
 # find escape sequence to change terminal window title
 case "$TERM" in
@@ -178,19 +152,9 @@ if ! command -v sudoedit >/dev/null; then
   alias sudoedit='sudo -e'
 fi
 
-alias source='.'
-
-alias ll='ls -l'
-alias la='ls -la'
-
-alias grn='grep -rn'
-
 alias dc='docker-compose'
 
 alias rg=$'rg --glob \'!**/node_modules\''
-alias rgp='rg --pcre2'
-alias less='less -R'
-alias emacs='/usr/local/opt/emacs-plus/Emacs.app/Contents/MacOS/Emacs -nw'
 
 alias fvim='__VIM_MODE=fast nvim'
 
@@ -202,6 +166,10 @@ export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
 . $HOME/.asdf/asdf.sh
+
+export PATH="/usr/local/opt/llvm/bin:$PATH"
+
+alias luajit="$(which luajit-2.1.0-beta3)"
 
 # Default WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>'
 export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
