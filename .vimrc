@@ -246,7 +246,7 @@ Plug 'junegunn/goyo.vim'
     autocmd! User GoyoLeave nested call <SID>goyo_leave()
     nnoremap <silent> gy :Goyo<CR>
     " wide goyo
-    nnoremap <silent> gwy :Goyo 120<CR>
+    nnoremap <silent> gwy :Goyo 125<CR>
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let s:coc_extensions = [
