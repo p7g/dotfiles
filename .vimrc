@@ -288,15 +288,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
     nmap <silent> <leader>f :call CocAction('format')<CR>
     nmap <silent> <C-k> <Plug>(coc-diagnostic-info)
 
-Plug 'rhysd/git-messenger.vim'
-    nnoremap <silent> gb :GitMessenger<CR>
-
-Plug 'vim-scripts/ReplaceWithRegister'
-    nmap gp <Plug>ReplaceWithRegisterOperator
-    nmap gpp <Plug>ReplaceWithRegisterLine
-    xmap gp <Plug>ReplaceWithRegisterVisual
-
-Plug 'vim-scripts/Sunset'
+Plug 'p7g/Sunset'
     let g:sunset_latitude = 45
     let g:sunset_longitude = -75
     " Reload sunset every day so that it recomputes the sunrise and sunset times
@@ -305,14 +297,21 @@ Plug 'vim-scripts/Sunset'
     function! s:reinit_sunset_if_new_day()
         let l:doy = strftime('%j')
         if l:doy != s:current_day_of_year
-            unlet g:loaded_sunset
-            call plug#load('vim-scripts/Sunset')
+            call Sunset_recalculate()
         endif
     endfunction
     augroup sunset_reload
         autocmd!
         autocmd CursorHold * nested call <SID>reinit_sunset_if_new_day()
     augroup END
+
+Plug 'rhysd/git-messenger.vim'
+    nnoremap <silent> gb :GitMessenger<CR>
+
+Plug 'vim-scripts/ReplaceWithRegister'
+    nmap gp <Plug>ReplaceWithRegisterOperator
+    nmap gpp <Plug>ReplaceWithRegisterLine
+    xmap gp <Plug>ReplaceWithRegisterVisual
 
 call plug#end()
 
