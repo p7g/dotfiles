@@ -160,7 +160,7 @@ function! AdjustTextWidth() abort
     return
   endif
   let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
-  let &textwidth = syn_element =~? 'comment' ? g:comment_width : 0
+  let &l:textwidth = l:syn_element =~? 'comment' ? g:comment_width : 0
 endfunction
 
 
@@ -205,7 +205,6 @@ Plug 'arzg/vim-colors-xcode'
 Plug 'cormacrelf/vim-colors-github'
 Plug 'morhetz/gruvbox'
 Plug 'sainnhe/everforest'
-Plug '4513echo/vim-colors-hatsunemiku'
 Plug 'cocopon/iceberg.vim'
 Plug 'robertmeta/nofrils'
 
@@ -235,7 +234,7 @@ Plug 'junegunn/fzf.vim'
     nnoremap <silent> <C-p> :FZF<CR>
 
 Plug 'vim-scripts/Sunset'
-    colorscheme gruvbox
+    colorscheme everforest
     let g:sunset_latitude = 45
     let g:sunset_longitude = -75
     " Reload sunset every day so that it recomputes the sunrise and sunset times
@@ -255,8 +254,19 @@ Plug 'vim-scripts/Sunset'
 
 Plug 'junegunn/goyo.vim'
     " Disable numbertoggle when in focus mode.
-    autocmd! User GoyoEnter let b:disable_numbertoggle = 1
-    autocmd! User GoyoLeave unlet b:disable_numbertoggle
+    function! s:goyo_enter()
+        let b:disable_numbertoggle = 1
+        setlocal nonumber norelativenumber
+    endfunction
+    function! s:goyo_leave()
+        unlet b:disable_numbertoggle
+        setlocal number relativenumber
+    endfunction
+    autocmd! User GoyoEnter nested call <SID>goyo_enter()
+    autocmd! User GoyoLeave nested call <SID>goyo_leave()
+    nnoremap <silent> gy :Goyo<CR>
+    " wide goyo
+    nnoremap <silent> gwy :Goyo 120<CR>
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let s:coc_extensions = [
