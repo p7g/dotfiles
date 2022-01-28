@@ -19,7 +19,7 @@ set colorcolumn=80
 set directory=$vimdir/tmp
 set expandtab
 set noexrc
-set grepprg=rg\ --vimgrep
+set grepprg=rg\ --vimgrep\ --glob\ '!**/node_modules'
 set guioptions=
 set hidden
 set ignorecase
@@ -51,7 +51,7 @@ set updatetime=300
 set wrap
 set writebackup
 
-fun! CocStatus()
+function! CocStatus()
   if exists('*coc#status')
     return coc#status()
   endif
@@ -73,10 +73,17 @@ set statusline+=%P        " percentage through file
 set statusline+=\         " space after percentage
 
 " automatically change to non-relative numbers when not active buffer
+
+function! s:set_relativenumber(on)
+    if !exists("b:disable_numbertoggle")
+       let &relativenumber = a:on
+    endif
+endfunction
+
 augroup numbertoggle
   autocmd!
-  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+  autocmd BufEnter,FocusGained,InsertLeave * call <SID>set_relativenumber(1)
+  autocmd BufLeave,FocusLost,InsertEnter   * call <SID>set_relativenumber(0)
 augroup END
 
 
@@ -85,6 +92,9 @@ let g:mapleader = '\'
 let g:maplocalleader = '|'
 
 " remap hjkl for Colemak (without using other keys)
+" j l   ← →
+" h     ↑
+"  k     ↓
 noremap h k
 noremap k j
 noremap j h
@@ -102,7 +112,7 @@ nnoremap <silent> <C-Left> :vertical resize -5<CR>
 nnoremap <silent> <C-Right> :vertical resize +5<CR>
 
 " clear search highlight with <leader>space
-nnoremap <silent> <leader><space> :let @/=""<CR>
+nnoremap <silent> <leader><space> :let @/ = ""<CR>
 
 " because it's annoying when you press ctrl+space by accident
 inoremap <C-@> <nop>
@@ -112,14 +122,14 @@ noremap <C-@> <nop>
 "
 augroup filetype_overrides
   autocmd!
-  autocmd BufRead *.variables set filetype=less
-  autocmd BufRead .eslintrc set filetype=json5
+  autocmd BufRead *.variables setlocal filetype=less
+  autocmd BufRead .eslintrc setlocal filetype=json5
 augroup END
 
 augroup filetype_javascript
   autocmd!
   " run the current file/selection with <localleader>r
-  autocmd FileType javascript noremap <localleader>r :w !node -<CR>
+  autocmd FileType javascript noremap <buffer> <localleader>r :w !node -<CR>
 augroup END
 
 " disable changes to indentation settings when opening a python file
@@ -129,16 +139,19 @@ let g:python_host_prog = 'python2'
 augroup filetype_python
   autocmd!
   " run the current file/selection with <localleader>r
-  autocmd FileType python noremap <localleader>r :w !python -<CR>
-  autocmd FileType python setlocal noexpandtab shiftwidth=4 tabstop=4 softtabstop=4
-  autocmd FileType python setlocal formatoptions+=croql
+  autocmd FileType python noremap <buffer> <localleader>r :w !python -<CR>
+  autocmd FileType python setlocal noexpandtab shiftwidth=4 tabstop=4
+                                 \ softtabstop=4 formatoptions+=croql
+augroup END
+
+augroup filetype_gitcommit
+  autocmd!
+  autocmd FileType gitcommit let b:dontAdjustTextWidth = 1
 augroup END
 
 augroup comment_textwidth
   autocmd!
-  " set the textwidth to the value of colorcolumn when in a comment
   autocmd FileType markdown,rst let b:dontAdjustTextWidth = 1
-  autocmd TextChanged,TextChangedI * :call AdjustTextWidth()
 augroup END
 
 let g:comment_width = 79
@@ -160,33 +173,6 @@ endif
 
 
 " --- plugins
-
-let s:colorschemes = [
-      \ 'dim13/gocode.vim',
-      \ 'junegunn/seoul256.vim',
-      \ 'arzg/vim-colors-xcode',
-      \ 'cormacrelf/vim-colors-github',
-      \ ]
-
-let s:plugins = [
-      \ ['neoclide/coc.nvim', {'branch': 'release'}],
-      \ 'tpope/vim-sleuth',
-      \ 'tpope/vim-surround',
-      \ 'tpope/vim-fugitive',
-      \ 'tpope/vim-rsi',
-      \ 'tpope/vim-dadbod',
-      \ 'tpope/vim-repeat',
-      \ 'tpope/vim-abolish',
-      \ 'sheerun/vim-polyglot',
-      \ 'editorconfig/editorconfig-vim',
-      \ ['junegunn/fzf', {'do': 'yes \| ./install --all'}],
-      \ 'junegunn/fzf.vim',
-      \ 'tommcdo/vim-lion',
-      \ 'vim-scripts/Sunset',
-      \ 'kristijanhusak/vim-dadbod-ui',
-      \ 'tpope/vim-dotenv',
-      \ 'rhysd/conflict-marker.vim',
-      \ ]
 
 if has('nvim')
   let s:autoload_path = expand('~/.local/share/nvim/site/autoload')
@@ -210,88 +196,104 @@ if empty(glob(s:autoload_path . '/plug.vim'))
   endif
 endif
 
-let g:sunset_latitude = 45
-let g:sunset_longitude = -75
-
 call plug#begin(s:plugged_dir)
 
-for s:plugin in s:colorschemes + s:plugins
-  if type(s:plugin) == v:t_list
-    let [s:name, s:options] = s:plugin
-    execute 'Plug ' . string(s:name) . ', ' . string(s:options)
-  else
-    execute 'Plug ' . string(s:plugin)
-  endif
-endfor 
+" Colorschemes
+Plug 'dim13/gocode.vim'
+Plug 'junegunn/seoul256.vim'
+Plug 'arzg/vim-colors-xcode'
+Plug 'cormacrelf/vim-colors-github'
+Plug 'morhetz/gruvbox'
+Plug 'sainnhe/everforest'
+Plug '4513echo/vim-colors-hatsunemiku'
+Plug 'cocopon/iceberg.vim'
+Plug 'robertmeta/nofrils'
+
+" Plugins
+Plug 'tpope/vim-sleuth'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-dadbod'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-abolish'
+Plug 'sheerun/vim-polyglot'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'tommcdo/vim-lion'
+Plug 'kristijanhusak/vim-dadbod-ui'
+Plug 'tpope/vim-dotenv'
+Plug 'rhysd/conflict-marker.vim'
+Plug 'junegunn/vim-peekaboo'
+Plug 'tpope/vim-commentary'
+Plug 'chrisbra/unicode.vim'
+
+Plug 'rhysd/git-messenger.vim'
+    nnoremap <silent> gb :GitMessenger<CR>
+
+Plug 'junegunn/fzf', {'do': 'yes \| ./install --all'}
+Plug 'junegunn/fzf.vim'
+    nnoremap <silent> <C-p> :FZF<CR>
+
+Plug 'vim-scripts/Sunset'
+    colorscheme gruvbox
+    let g:sunset_latitude = 45
+    let g:sunset_longitude = -75
+    " Reload sunset every day so that it recomputes the sunrise and sunset times
+    " for the current day.
+    let s:current_day_of_year = strftime('%j')
+    function! s:reinit_sunset_if_new_day()
+        let l:doy = strftime('%j')
+        if l:doy != s:current_day_of_year
+            unlet g:loaded_sunset
+            call plug#load('vim-scripts/Sunset')
+        endif
+    endfunction
+    augroup sunset_reload
+        autocmd!
+        autocmd CursorHold * nested call <SID>reinit_sunset_if_new_day()
+    augroup END
+
+Plug 'junegunn/goyo.vim'
+    " Disable numbertoggle when in focus mode.
+    autocmd! User GoyoEnter let b:disable_numbertoggle = 1
+    autocmd! User GoyoLeave unlet b:disable_numbertoggle
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    let s:coc_extensions = [
+        \ 'coc-json',
+        \ 'coc-tsserver',
+        \ 'coc-html',
+        \ 'coc-css',
+        \ 'coc-pyright',
+        \ 'coc-eslint',
+        \ 'coc-git',
+        \ 'coc-vimlsp',
+        \ 'coc-prettier',
+        \ 'coc-rls',
+        \ 'coc-go',
+        \ ]
+
+    function! InstallCocExtensions()
+        execute 'CocInstall ' . join(s:coc_extensions, ' ')
+    endfunction
+
+    nmap <leader>d :CocList diagnostics<CR>
+    nmap <silent> [c <Plug>(coc-diagnostic-prev)
+    nmap <silent> ]c <Plug>(coc-diagnostic-next)
+    nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gr <Plug>(coc-references)
+    nmap <leader>rn <Plug>(coc-rename)
+    nnoremap <silent> K :call <SID>show_documentation()<CR>
+    xmap <silent> <leader>f <Plug>(coc-format-selected)
+    nmap <silent> <leader>f :call CocAction('format')<CR>
+    nmap <silent> <C-k> <Plug>(coc-diagnostic-info)
+
+    function! s:show_documentation()
+        if index(['vim', 'help'], &filetype) >= 0
+            execute 'help ' . expand('<cword>')
+        else
+            call CocAction('doHover')
+        endif
+    endfunction
 
 call plug#end()
-
-
-" --- colorscheme stuff
-
-set background=light
-colorscheme gocode
-
-function! Sunset_daytime_callback()
-  set background=light
-  colorscheme gocode
-endfunction
-
-function! Sunset_nighttime_callback()
-  set background=dark
-  colorscheme xcodedark
-endfunction
-
-
-" --- coc.nvim configuration
-
-let s:coc_extensions = [
-      \ 'coc-json',
-      \ 'coc-tsserver',
-      \ 'coc-html',
-      \ 'coc-css',
-      \ 'coc-pyright',
-      \ 'coc-eslint',
-      \ 'coc-git',
-      \ 'coc-vimlsp',
-      \ 'coc-prettier',
-      \ 'coc-rls',
-      \ 'coc-go',
-      \ ]
-
-function! InstallCocExtensions()
-  execute 'CocInstall ' . join(s:coc_extensions, ' ')
-endfunction
-
-nmap <leader>d :CocList diagnostics<CR>
-nmap <silent> [c <Plug>(coc-diagnostic-prev)
-nmap <silent> ]c <Plug>(coc-diagnostic-next)
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-nmap <leader>rn <Plug>(coc-rename)
-nmap <leader>a :<C-u>CocList outline<CR>
-nmap <leader>q :<C-u>CocList -I symbols<CR>
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-xmap <silent> <leader>f <Plug>(coc-format-selected)
-nmap <silent> <leader>f :call CocAction('format')<CR>
-nmap <silent> <C-k> <Plug>(coc-diagnostic-info)
-
-xmap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap if <Plug>(coc-funcobj-i)
-omap af <Plug>(coc-funcobj-a)
-
-function! s:show_documentation()
-  if index(['vim', 'help'], &filetype) >= 0
-    execute 'help ' . expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-
-" fzf mappings
-
-nnoremap <silent> <C-p> :FZF<CR>
