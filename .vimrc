@@ -199,58 +199,38 @@ endif
 call plug#begin(s:plugged_dir)
 
 " Colorschemes
+Plug 'arzg/vim-colors-xcode'
+Plug 'cocopon/iceberg.vim'
+Plug 'cormacrelf/vim-colors-github'
 Plug 'dim13/gocode.vim'
 Plug 'junegunn/seoul256.vim'
-Plug 'arzg/vim-colors-xcode'
-Plug 'cormacrelf/vim-colors-github'
 Plug 'morhetz/gruvbox'
-Plug 'sainnhe/everforest'
-Plug 'cocopon/iceberg.vim'
 Plug 'robertmeta/nofrils'
+Plug 'sainnhe/everforest'
 
 " Plugins
+Plug 'editorconfig/editorconfig-vim'
+Plug 'junegunn/vim-peekaboo'
+Plug 'kristijanhusak/vim-dadbod-ui'
+Plug 'rhysd/conflict-marker.vim'
+Plug 'sheerun/vim-polyglot'
+Plug 'tommcdo/vim-lion'
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-dadbod'
+Plug 'tpope/vim-dotenv'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rsi'
-Plug 'tpope/vim-dadbod'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-abolish'
-Plug 'sheerun/vim-polyglot'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'tommcdo/vim-lion'
-Plug 'kristijanhusak/vim-dadbod-ui'
-Plug 'tpope/vim-dotenv'
-Plug 'rhysd/conflict-marker.vim'
-Plug 'junegunn/vim-peekaboo'
-Plug 'tpope/vim-commentary'
-Plug 'chrisbra/unicode.vim'
 
-Plug 'rhysd/git-messenger.vim'
-    nnoremap <silent> gb :GitMessenger<CR>
+Plug 'chrisbra/unicode.vim'
+    nnoremap <silent> ga :UnicodeName<CR>
 
 Plug 'junegunn/fzf', {'do': 'yes \| ./install --all'}
 Plug 'junegunn/fzf.vim'
     nnoremap <silent> <C-p> :FZF<CR>
-
-Plug 'vim-scripts/Sunset'
-    colorscheme everforest
-    let g:sunset_latitude = 45
-    let g:sunset_longitude = -75
-    " Reload sunset every day so that it recomputes the sunrise and sunset times
-    " for the current day.
-    let s:current_day_of_year = strftime('%j')
-    function! s:reinit_sunset_if_new_day()
-        let l:doy = strftime('%j')
-        if l:doy != s:current_day_of_year
-            unlet g:loaded_sunset
-            call plug#load('vim-scripts/Sunset')
-        endif
-    endfunction
-    augroup sunset_reload
-        autocmd!
-        autocmd CursorHold * nested call <SID>reinit_sunset_if_new_day()
-    augroup END
 
 Plug 'junegunn/goyo.vim'
     " Disable numbertoggle when in focus mode.
@@ -282,11 +262,16 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
         \ 'coc-rls',
         \ 'coc-go',
         \ ]
-
     function! InstallCocExtensions()
         execute 'CocInstall ' . join(s:coc_extensions, ' ')
     endfunction
-
+    function! s:show_documentation()
+        if index(['vim', 'help'], &filetype) >= 0
+            execute 'help ' . expand('<cword>')
+        else
+            call CocAction('doHover')
+        endif
+    endfunction
     nmap <leader>d :CocList diagnostics<CR>
     nmap <silent> [c <Plug>(coc-diagnostic-prev)
     nmap <silent> ]c <Plug>(coc-diagnostic-next)
@@ -298,12 +283,26 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
     nmap <silent> <leader>f :call CocAction('format')<CR>
     nmap <silent> <C-k> <Plug>(coc-diagnostic-info)
 
-    function! s:show_documentation()
-        if index(['vim', 'help'], &filetype) >= 0
-            execute 'help ' . expand('<cword>')
-        else
-            call CocAction('doHover')
+Plug 'rhysd/git-messenger.vim'
+    nnoremap <silent> gb :GitMessenger<CR>
+
+Plug 'vim-scripts/Sunset'
+    colorscheme everforest
+    let g:sunset_latitude = 45
+    let g:sunset_longitude = -75
+    " Reload sunset every day so that it recomputes the sunrise and sunset times
+    " for the current day.
+    let s:current_day_of_year = strftime('%j')
+    function! s:reinit_sunset_if_new_day()
+        let l:doy = strftime('%j')
+        if l:doy != s:current_day_of_year
+            unlet g:loaded_sunset
+            call plug#load('vim-scripts/Sunset')
         endif
     endfunction
+    augroup sunset_reload
+        autocmd!
+        autocmd CursorHold * nested call <SID>reinit_sunset_if_new_day()
+    augroup END
 
 call plug#end()
