@@ -211,7 +211,9 @@ Plug 'robertmeta/nofrils'
 Plug 'sainnhe/everforest'
 
 " Plugins
+Plug 'AndrewRadev/splitjoin.vim'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'junegunn/gv.vim'
 Plug 'junegunn/vim-peekaboo'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'rhysd/conflict-marker.vim'
@@ -289,8 +291,12 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rhysd/git-messenger.vim'
     nnoremap <silent> gb :GitMessenger<CR>
 
+Plug 'vim-scripts/ReplaceWithRegister'
+    nmap gp <Plug>ReplaceWithRegisterOperator
+    nmap gpp <Plug>ReplaceWithRegisterLine
+    xmap gp <Plug>ReplaceWithRegisterVisual
+
 Plug 'vim-scripts/Sunset'
-    colorscheme everforest
     let g:sunset_latitude = 45
     let g:sunset_longitude = -75
     " Reload sunset every day so that it recomputes the sunrise and sunset times
@@ -309,3 +315,5 @@ Plug 'vim-scripts/Sunset'
     augroup END
 
 call plug#end()
+
+colorscheme everforest
