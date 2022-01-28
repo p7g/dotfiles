@@ -151,11 +151,13 @@ augroup END
 
 augroup comment_textwidth
   autocmd!
+  " set the textwidth to the value of colorcolumn when in a comment
   autocmd FileType markdown,rst let b:dont_adjust_tw = 1
+  autocmd TextChanged,TextChangedI * call <SID>adjust_text_width()
 augroup END
 
 let g:comment_width = 79
-function! AdjustTextWidth() abort
+function! s:adjust_text_width() abort
   if exists('b:dont_adjust_tw')
     return
   endif
@@ -233,6 +235,7 @@ Plug 'junegunn/fzf.vim'
     nnoremap <silent> <C-p> :FZF<CR>
 
 Plug 'junegunn/goyo.vim'
+    let g:goyo_width = 82
     " Disable numbertoggle when in focus mode.
     function! s:goyo_enter()
         let b:disable_numbertoggle = 1
