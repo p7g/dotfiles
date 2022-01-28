@@ -146,17 +146,17 @@ augroup END
 
 augroup filetype_gitcommit
   autocmd!
-  autocmd FileType gitcommit let b:dontAdjustTextWidth = 1
+  autocmd FileType gitcommit let b:dont_adjust_tw = 1
 augroup END
 
 augroup comment_textwidth
   autocmd!
-  autocmd FileType markdown,rst let b:dontAdjustTextWidth = 1
+  autocmd FileType markdown,rst let b:dont_adjust_tw = 1
 augroup END
 
 let g:comment_width = 79
 function! AdjustTextWidth() abort
-  if exists('b:dontAdjustTextWidth')
+  if exists('b:dont_adjust_tw')
     return
   endif
   let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
