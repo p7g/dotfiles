@@ -5,9 +5,9 @@ set fileencoding=utf-8 termencoding=utf-8 encoding=utf-8
 " --- settings
 
 if has('nvim')
-  let $vimdir = stdpath('config')
+    let $vimdir = stdpath('config')
 else
-  let $vimdir = resolve($HOME . '/.vim')
+    let $vimdir = resolve($HOME . '/.vim')
 endif
 
 set autoindent
@@ -52,10 +52,10 @@ set wrap
 set writebackup
 
 function! CocStatus()
-  if exists('*coc#status')
-    return coc#status()
-  endif
-  return ''
+    if exists('*coc#status')
+        return coc#status()
+    endif
+    return ''
 endfun
 
 set statusline=%#LineNr#  " match number column hightlighting
@@ -81,9 +81,9 @@ function! s:set_relativenumber(on)
 endfunction
 
 augroup numbertoggle
-  autocmd!
-  autocmd BufEnter,FocusGained,InsertLeave * call <SID>set_relativenumber(1)
-  autocmd BufLeave,FocusLost,InsertEnter   * call <SID>set_relativenumber(0)
+    autocmd!
+    autocmd BufEnter,FocusGained,InsertLeave * call <SID>set_relativenumber(1)
+    autocmd BufLeave,FocusLost,InsertEnter   * call <SID>set_relativenumber(0)
 augroup END
 
 
@@ -121,15 +121,15 @@ noremap <C-@> <nop>
 " --- filetype augroups
 "
 augroup filetype_overrides
-  autocmd!
-  autocmd BufRead *.variables setlocal filetype=less
-  autocmd BufRead .eslintrc setlocal filetype=json5
+    autocmd!
+    autocmd BufRead *.variables setlocal filetype=less
+    autocmd BufRead .eslintrc setlocal filetype=json5
 augroup END
 
 augroup filetype_javascript
-  autocmd!
-  " run the current file/selection with <localleader>r
-  autocmd FileType javascript noremap <buffer> <localleader>r :w !node -<CR>
+    autocmd!
+    " run the current file/selection with <localleader>r
+    autocmd FileType javascript noremap <buffer> <localleader>r :w !node -<CR>
 augroup END
 
 " disable changes to indentation settings when opening a python file
@@ -137,65 +137,65 @@ let g:python_recommended_style = 0
 let g:python3_host_prog = 'python3.9'
 let g:python_host_prog = 'python2'
 augroup filetype_python
-  autocmd!
-  " run the current file/selection with <localleader>r
-  autocmd FileType python noremap <buffer> <localleader>r :w !python -<CR>
-  autocmd FileType python setlocal noexpandtab shiftwidth=4 tabstop=4
-                                 \ softtabstop=4 formatoptions+=croql
+    autocmd!
+    " run the current file/selection with <localleader>r
+    autocmd FileType python noremap <buffer> <localleader>r :w !python -<CR>
+    autocmd FileType python setlocal noexpandtab shiftwidth=4 tabstop=4
+                                   \ softtabstop=4 formatoptions+=croql
 augroup END
 
 augroup filetype_gitcommit
-  autocmd!
-  autocmd FileType gitcommit let b:dont_adjust_tw = 1
+    autocmd!
+    autocmd FileType gitcommit let b:dont_adjust_tw = 1
 augroup END
 
 augroup comment_textwidth
-  autocmd!
-  " set the textwidth to the value of colorcolumn when in a comment
-  autocmd FileType markdown,rst let b:dont_adjust_tw = 1
-  autocmd TextChanged,TextChangedI * call <SID>adjust_text_width()
+    autocmd!
+    " set the textwidth to the value of colorcolumn when in a comment
+    autocmd FileType markdown,rst let b:dont_adjust_tw = 1
+    autocmd TextChanged,TextChangedI * call <SID>adjust_text_width()
 augroup END
 
 let g:comment_width = 79
 function! s:adjust_text_width() abort
-  if exists('b:dont_adjust_tw')
-    return
-  endif
-  let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
-  let &l:textwidth = l:syn_element =~? 'comment' ? g:comment_width : 0
+    if exists('b:dont_adjust_tw')
+        return
+    endif
+    let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
+    let &l:textwidth = l:syn_element =~? 'comment' ? g:comment_width : 0
 endfunction
 
 
 " --- that's all the fast stuff, now for the slow stuff
 
 if $__VIM_MODE ==? 'fast'
-  colorscheme blue
-  finish
+    colorscheme blue
+    finish
 endif
 
 
 " --- plugins
 
 if has('nvim')
-  let s:autoload_path = expand('~/.local/share/nvim/site/autoload')
-  let s:plugged_dir = stdpath('config') . '/plugged'
+    let s:autoload_path = expand('~/.local/share/nvim/site/autoload')
+    let s:plugged_dir = stdpath('config') . '/plugged'
 else
-  let s:autoload_path = expand('~/.vim/autoload')
-  let s:plugged_dir = expand('~/.vim/plugged')
+    let s:autoload_path = expand('~/.vim/autoload')
+    let s:plugged_dir = expand('~/.vim/plugged')
 endif
 
 " Ensure plug.vim is installed
 if empty(glob(s:autoload_path . '/plug.vim'))
-  let s:error = system(
-        \ 'curl -fLo '
-        \ . shellescape(s:autoload_path . '/plug.vim')
-        \ . ' --create-dirs'
-        \ . ' https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-        \ )
-  if v:shell_error
-      echom 'Failed to get plug.vim: ' . s:error
-      finish
-  endif
+    let s:error = system(
+                \ 'curl -fLo '
+                \ . shellescape(s:autoload_path . '/plug.vim')
+                \ . ' --create-dirs'
+                \ . ' https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+                \ )
+    if v:shell_error
+        echom 'Failed to get plug.vim: ' . s:error
+        finish
+    endif
 endif
 
 call plug#begin(s:plugged_dir)
