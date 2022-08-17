@@ -204,15 +204,10 @@ augroup filetype_python
                                    \ softtabstop=4 formatoptions+=croql
 augroup END
 
-augroup filetype_gitcommit
-    autocmd!
-    autocmd FileType gitcommit let b:dont_adjust_tw = 1
-augroup END
-
 augroup comment_textwidth
     autocmd!
     " set the textwidth to the value of colorcolumn when in a comment
-    autocmd FileType markdown,rst let b:dont_adjust_tw = 1
+    autocmd FileType markdown,rst,gitcommit let b:dont_adjust_tw = 1
     autocmd TextChanged,TextChangedI * call <SID>adjust_text_width()
 augroup END
 
