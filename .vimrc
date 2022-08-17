@@ -116,6 +116,35 @@ nnoremap <silent><expr> <leader>l empty(filter(getwininfo(), 'v:val.loclist')) ?
 nnoremap <silent> ]l :lnext<CR>
 nnoremap <silent> [l :lprev<CR>
 
+" --- Commands
+
+command! -bang Bonly :call <SID>bufonly('<bang>')
+function! s:bufonly(bang)
+    let l:currentbuf = bufnr('%')
+    let l:bufs = getbufinfo()
+
+    " Abort early if not called with ! and there are changed buffers
+    for l:buf in l:bufs
+        if l:buf['bufnr'] == l:currentbuf
+            continue
+        elseif l:buf['changed'] && a:bang ==# ''
+            echohl ErrorMsg
+            echomsg bufname(l:buf['bufnr']) 'has unsaved changes, use ! to force delete'
+            echohl None
+            return
+        endif
+    endfor
+
+    let g:_bufonly_delete_count = 0
+    let l:cmd = 'if bufnr() != ' . l:currentbuf
+                \ . ' | bdelete' . a:bang
+                \ . ' | let g:_bufonly_delete_count += 1'
+                \ . ' | endif'
+    execute 'bufdo ' . l:cmd
+    echomsg g:_bufonly_delete_count 'buffer(s) deleted'
+    unlet g:_bufonly_delete_count
+endfunction
+
 " --- augroups
 
 " automatically change to non-relative numbers when not active buffer
