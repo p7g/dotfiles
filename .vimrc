@@ -260,6 +260,19 @@ Plug 'morhetz/gruvbox'
 Plug 'robertmeta/nofrils'
 Plug 'sainnhe/everforest'
 
+Plug 'mcchrish/zenbones.nvim'
+    let g:duckbones_compat = 1
+    let g:forestbones_compat = 1
+    let g:kanagawabones_compat = 1
+    let g:neobones_compat = 1
+    let g:nordbones_compat = 1
+    let g:randombones_compat = 1
+    let g:rosebones_compat = 1
+    let g:seoulbones_compat = 1
+    let g:tokyobones_compat = 1
+    let g:vimbones_compat = 1
+    let g:zenbones_compat = 1
+
 " Plugins
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'editorconfig/editorconfig-vim'
@@ -349,4 +362,4 @@ Plug 'vim-scripts/ReplaceWithRegister'
 
 call plug#end()
 
-colorscheme everforest
+colorscheme rosebones
