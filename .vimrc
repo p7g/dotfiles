@@ -103,6 +103,18 @@ nnoremap <silent> <leader><space> :let @/ = ""<CR>
 " because it's annoying when you press ctrl+space by accident
 inoremap <C-@> <nop>
 noremap <C-@> <nop>
+inoremap <C-Space> <nop>
+noremap <C-Space> <nop>
+
+" quickfix stuff
+nnoremap <silent><expr> <leader>q empty(filter(getwininfo(), 'v:val.quickfix')) ? ':copen<CR>' : ':cclose<CR>'
+nnoremap <silent> ]q :cnext<CR>
+nnoremap <silent> [q :cprev<CR>
+
+" loclist stuff
+nnoremap <silent><expr> <leader>l empty(filter(getwininfo(), 'v:val.loclist')) ? ':lopen<CR>' : ':lclose<CR>'
+nnoremap <silent> ]l :lnext<CR>
+nnoremap <silent> [l :lprev<CR>
 
 " --- augroups
 
