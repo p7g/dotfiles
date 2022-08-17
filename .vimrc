@@ -216,7 +216,7 @@ function! s:adjust_text_width() abort
     if exists('b:dont_adjust_tw')
         return
     endif
-    let l:syn_element = synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
+    let l:syn_element = synID(line('.'), col('.') - 1, 1)->synIDattr('name')
     let &l:textwidth = l:syn_element =~? 'comment' ? g:comment_width : 0
 endfunction
 
@@ -240,7 +240,7 @@ else
 endif
 
 " Ensure plug.vim is installed
-if empty(glob(s:autoload_path . '/plug.vim'))
+if glob(s:autoload_path . '/plug.vim')->empty()
     let s:error = system(
                 \ 'curl -fLo '
                 \ . shellescape(s:autoload_path . '/plug.vim')
@@ -299,7 +299,7 @@ Plug 'tpope/vim-surround'
 Plug 'chrisbra/unicode.vim'
     nnoremap <silent> ga :UnicodeName<CR>
 
-Plug 'junegunn/fzf', {'do': 'yes \| ./install --all'}
+Plug 'junegunn/fzf', {'do': {-> fzf#install()}}
 Plug 'junegunn/fzf.vim'
     nnoremap <silent> <C-p> :FZF<CR>
 
