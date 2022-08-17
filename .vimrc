@@ -51,11 +51,19 @@ set updatetime=300
 set wrap
 set writebackup
 
-function! CocStatus()
-    if exists('*coc#status')
-        return coc#status()
+function! CoqStatus()
+    let l:diagnostics = v:lua.require'lsp-status'.diagnostics()
+    let l:status = []
+    if l:diagnostics.errors > 0
+        eval l:status->add('❌ ' . l:diagnostics.errors)
     endif
-    return ''
+    if l:diagnostics.warnings > 0
+        eval l:status->add('⚠️ ' . l:diagnostics.warnings)
+    endif
+    if l:diagnostics.info > 0
+        eval l:status->add('ℹ️ ' . l:diagnostics.info)
+    endif
+    return l:status->join('  ')
 endfun
 
 set statusline=%#LineNr#  " match number column hightlighting
@@ -67,7 +75,7 @@ set statusline+=%r        " readonly flag
 set statusline+=%h        " helpfile flag
 set statusline+=%w        " preview window flag
 set statusline+=%q        " quickfix window flag
-set statusline+=\ %{CocStatus()}
+set statusline+=\ %{CoqStatus()}
 set statusline+=%=        " switch to right side
 set statusline+=%P        " percentage through file
 set statusline+=\         " space after percentage
@@ -278,6 +286,7 @@ Plug 'AndrewRadev/splitjoin.vim'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'junegunn/gv.vim'
 Plug 'kristijanhusak/vim-dadbod-ui'
+Plug 'nvim-lua/lsp-status.nvim'
 Plug 'tommcdo/vim-lion'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
@@ -296,41 +305,25 @@ Plug 'junegunn/fzf', {'do': 'yes \| ./install --all'}
 Plug 'junegunn/fzf.vim'
     nnoremap <silent> <C-p> :FZF<CR>
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    let s:coc_extensions = [
-        \ 'coc-json',
-        \ 'coc-tsserver',
-        \ 'coc-html',
-        \ 'coc-css',
-        \ 'coc-pyright',
-        \ 'coc-eslint',
-        \ 'coc-git',
-        \ 'coc-vimlsp',
-        \ 'coc-prettier',
-        \ 'coc-rls',
-        \ 'coc-go',
-        \ ]
-    function! InstallCocExtensions()
-        execute 'CocInstall ' . join(s:coc_extensions, ' ')
-    endfunction
-    function! s:show_documentation()
-        if index(['vim', 'help'], &filetype) >= 0
-            execute 'help ' . expand('<cword>')
-        else
-            call CocAction('doHover')
-        endif
-    endfunction
-    nmap <leader>d :CocList diagnostics<CR>
-    nmap <silent> [c <Plug>(coc-diagnostic-prev)
-    nmap <silent> ]c <Plug>(coc-diagnostic-next)
-    nmap <silent> gd <Plug>(coc-definition)
-    nmap <silent> gy <Plug>(coc-implementation)
-    nmap <silent> gr <Plug>(coc-references)
-    nmap <leader>rn <Plug>(coc-rename)
-    nnoremap <silent> K :call <SID>show_documentation()<CR>
-    xmap <silent> <leader>f <Plug>(coc-format-selected)
-    nmap <silent> <leader>f :call CocAction('format')<CR>
-    nmap <silent> <C-k> <Plug>(coc-diagnostic-info)
+Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+    let g:coq_settings = {
+                \ 'auto_start': 'shut-up',
+                \ 'xdg': has('nvim') ? v:true : v:false,
+                \ 'keymap.recommended': v:false,
+                \ 'keymap.bigger_preview': v:null,
+                \ }
+
+Plug 'neovim/nvim-lspconfig'
+    nnoremap <silent> <leader>d :lua vim.diagnostic.setloclist()<CR>
+    nnoremap <silent> ]c :lua vim.diagnostic.goto_next()<CR>
+    nnoremap <silent> [c :lua vim.diagnostic.goto_prev()<CR>
+    nnoremap <silent> gd :lua vim.lsp.buf.definition()<CR>
+    nnoremap <silent> gD :lua vim.lsp.buf.declaration()<CR>
+    nnoremap <silent> gi :lua vim.lsp.buf.implementation()<CR>
+    nnoremap <silent> gy :lua vim.lsp.buf.type_definition()<CR>
+    nnoremap <silent> K :lua vim.lsp.buf.hover()<CR>
+    nnoremap <silent> gr :lua vim.lsp.buf.references()<CR>
+    nnoremap <silent> rn :lua vim.lsp.buf.rename()<CR>
 
 Plug 'p7g/Sunset'
     let g:sunset_latitude = 45
@@ -347,6 +340,22 @@ Plug 'p7g/Sunset'
     augroup sunset_reload
         autocmd!
         autocmd CursorHold * nested call <SID>reinit_sunset_if_new_day()
+    augroup END
+
+Plug 'p7g/vim-prettier'
+    let g:prettier#quickfix_enabled = 0
+
+    augroup prettier_init
+        autocmd!
+        autocmd FileType javascript,javascriptreact,typescript,typescriptreact
+                    \ nnoremap <buffer><silent> <leader>f <Plug>(Prettier) |
+                    \ xnoremap <buffer><silent> <leader>f <Plug>(PrettierFragment)
+    augroup END
+
+Plug 'psf/black', {'branch': 'stable'}
+    augroup black_init
+        autocmd!
+        autocmd FileType python nnoremap <buffer><silent> <leader>f :Black<CR>
     augroup END
 
 Plug 'rhysd/conflict-marker.vim'  " try to fix ct not being unbound
@@ -374,5 +383,13 @@ Plug 'vim-scripts/ReplaceWithRegister'
     xmap gp <Plug>ReplaceWithRegisterVisual
 
 call plug#end()
+
+lua <<EOF
+local lspconfig = require("lspconfig")
+
+lspconfig.pyright.setup{}
+lspconfig.eslint.setup{}
+lspconfig.tsserver.setup{}
+EOF
 
 colorscheme rosebones
