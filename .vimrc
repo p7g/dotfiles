@@ -283,6 +283,7 @@ Plug 'mcchrish/zenbones.nvim'
 
 " Plugins
 Plug 'AndrewRadev/splitjoin.vim'
+Plug 'airblade/vim-gitgutter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'junegunn/gv.vim'
 Plug 'kristijanhusak/vim-dadbod-ui'
