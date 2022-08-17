@@ -281,6 +281,7 @@ Plug 'mcchrish/zenbones.nvim'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'junegunn/fzf', {'do': {-> fzf#install()}}
 Plug 'junegunn/gv.vim'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'nvim-lua/lsp-status.nvim'
@@ -298,7 +299,6 @@ Plug 'tpope/vim-surround'
 Plug 'chrisbra/unicode.vim'
     nnoremap <silent> ga :UnicodeName<CR>
 
-Plug 'junegunn/fzf', {'do': {-> fzf#install()}}
 Plug 'junegunn/fzf.vim'
     nnoremap <silent> <C-p> :FZF<CR>
 
