@@ -145,6 +145,17 @@ function! s:bufonly(bang)
     unlet g:_bufonly_delete_count
 endfunction
 
+command! ProfileStart :call <SID>profile_start()
+command! ProfileStop :call <SID>profile_stop()
+function! s:profile_start()
+    profile start $vimdir/profile.out
+    profile func *
+    profile file *
+endfunction
+function! s:profile_stop()
+    profile stop
+endfunction
+
 " --- augroups
 
 " automatically change to non-relative numbers when not active buffer
