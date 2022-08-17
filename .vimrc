@@ -236,23 +236,6 @@ Plug 'junegunn/fzf', {'do': 'yes \| ./install --all'}
 Plug 'junegunn/fzf.vim'
     nnoremap <silent> <C-p> :FZF<CR>
 
-Plug 'junegunn/goyo.vim'
-    let g:goyo_width = 82
-    " Disable numbertoggle when in focus mode.
-    function! s:goyo_enter()
-        let b:disable_numbertoggle = 1
-        setlocal nonumber norelativenumber
-    endfunction
-    function! s:goyo_leave()
-        unlet b:disable_numbertoggle
-        setlocal number relativenumber
-    endfunction
-    autocmd! User GoyoEnter nested call <SID>goyo_enter()
-    autocmd! User GoyoLeave nested call <SID>goyo_leave()
-    nnoremap <silent> gy :Goyo<CR>
-    " wide goyo
-    nnoremap <silent> gwy :Goyo 125<CR>
-
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let s:coc_extensions = [
         \ 'coc-json',
@@ -281,6 +264,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
     nmap <silent> [c <Plug>(coc-diagnostic-prev)
     nmap <silent> ]c <Plug>(coc-diagnostic-next)
     nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gy <Plug>(coc-implementation)
     nmap <silent> gr <Plug>(coc-references)
     nmap <leader>rn <Plug>(coc-rename)
     nnoremap <silent> K :call <SID>show_documentation()<CR>
