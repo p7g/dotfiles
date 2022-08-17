@@ -372,7 +372,6 @@ Plug 'rhysd/git-messenger.vim'
     nnoremap <silent> gb :GitMessenger<CR>
 
 Plug 'sheerun/vim-polyglot'
-    " let g:python_pep8_indent_skip_concealed = 1
     let g:python_pep8_indent_searchpair_timeout = 75
 
 Plug 'vim-scripts/ReplaceWithRegister'
