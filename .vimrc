@@ -279,7 +279,6 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'junegunn/gv.vim'
 Plug 'junegunn/vim-peekaboo'
 Plug 'kristijanhusak/vim-dadbod-ui'
-Plug 'rhysd/conflict-marker.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'tommcdo/vim-lion'
 Plug 'tpope/vim-abolish'
@@ -351,6 +350,18 @@ Plug 'p7g/Sunset'
         autocmd!
         autocmd CursorHold * nested call <SID>reinit_sunset_if_new_day()
     augroup END
+
+Plug 'rhysd/conflict-marker.vim'  " try to fix ct not being unbound
+    command! ConflictMarkerUnbind :call <SID>conflict_marker_unmap()
+    function! s:conflict_marker_unmap()
+        nunmap <buffer>]x <Plug>(conflict-marker-next-hunk)
+        nunmap <buffer>[x <Plug>(conflict-marker-prev-hunk)
+        nunmap <buffer>ct <Plug>(conflict-marker-themselves)
+        nunmap <buffer>co <Plug>(conflict-marker-ourselves)
+        nunmap <buffer>cn <Plug>(conflict-marker-none)
+        nunmap <buffer>cb <Plug>(conflict-marker-both)
+        nunmap <buffer>cB <Plug>(conflict-marker-both-rev)
+    endfunction
 
 Plug 'rhysd/git-messenger.vim'
     nnoremap <silent> gb :GitMessenger<CR>
