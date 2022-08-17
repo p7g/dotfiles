@@ -72,20 +72,6 @@ set statusline+=%=        " switch to right side
 set statusline+=%P        " percentage through file
 set statusline+=\         " space after percentage
 
-" automatically change to non-relative numbers when not active buffer
-
-function! s:set_relativenumber(on)
-    if !exists("b:disable_numbertoggle")
-       let &relativenumber = a:on
-    endif
-endfunction
-
-augroup numbertoggle
-    autocmd!
-    autocmd BufEnter,FocusGained,InsertLeave * call <SID>set_relativenumber(1)
-    autocmd BufLeave,FocusLost,InsertEnter   * call <SID>set_relativenumber(0)
-augroup END
-
 
 " --- key bindings
 let g:mapleader = '\'
@@ -118,8 +104,20 @@ nnoremap <silent> <leader><space> :let @/ = ""<CR>
 inoremap <C-@> <nop>
 noremap <C-@> <nop>
 
-" --- filetype augroups
-"
+" --- augroups
+
+" automatically change to non-relative numbers when not active buffer
+augroup numbertoggle
+    autocmd!
+    autocmd BufEnter,FocusGained,InsertLeave * call <SID>set_relativenumber(1)
+    autocmd BufLeave,FocusLost,InsertEnter   * call <SID>set_relativenumber(0)
+augroup END
+function! s:set_relativenumber(on)
+    if !exists("b:disable_numbertoggle")
+       let &relativenumber = a:on
+    endif
+endfunction
+
 augroup filetype_overrides
     autocmd!
     autocmd BufRead *.variables setlocal filetype=less
