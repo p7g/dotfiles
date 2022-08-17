@@ -124,6 +124,7 @@ nnoremap <silent><expr> <leader>l empty(filter(getwininfo(), 'v:val.loclist')) ?
 nnoremap <silent> ]l :lnext<CR>
 nnoremap <silent> [l :lprev<CR>
 
+
 " --- Commands
 
 command! -bang Bonly :call <SID>bufonly('<bang>')
@@ -163,6 +164,7 @@ endfunction
 function! s:profile_stop()
     profile stop
 endfunction
+
 
 " --- augroups
 
