@@ -211,13 +211,12 @@ augroup comment_textwidth
     autocmd TextChanged,TextChangedI * call <SID>adjust_text_width()
 augroup END
 
-let g:comment_width = 79
 function! s:adjust_text_width() abort
     if exists('b:dont_adjust_tw')
         return
     endif
     let l:syn_element = synID(line('.'), col('.') - 1, 1)->synIDattr('name')
-    let &l:textwidth = l:syn_element =~? 'comment' ? g:comment_width : 0
+    let &l:textwidth = l:syn_element =~? 'comment' ? &l:colorcolumn - 1 : 0
 endfunction
 
 
