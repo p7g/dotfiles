@@ -192,7 +192,7 @@ augroup END
 
 " disable changes to indentation settings when opening a python file
 let g:python_recommended_style = 0
-let g:python3_host_prog = 'python3.9'
+" let g:python3_host_prog = 'python3.11'
 let g:python_host_prog = 'python2'
 augroup filetype_python
     autocmd!
