@@ -52,7 +52,8 @@ set wrap
 set writebackup
 
 function! CoqStatus()
-    let l:diagnostics = v:lua.require'lsp-status'.diagnostics()
+    let l:buf = bufnr('%')
+    let l:diagnostics = v:lua.require'lsp-status'.diagnostics(l:buf)
     let l:status = []
     if l:diagnostics.errors > 0
         eval l:status->add('❌ ' . l:diagnostics.errors)
@@ -63,7 +64,7 @@ function! CoqStatus()
     if l:diagnostics.info > 0
         eval l:status->add('ℹ️ ' . l:diagnostics.info)
     endif
-    return l:status->join('  ')
+    return l:status->join(' ')
 endfun
 
 set statusline=%#LineNr#  " match number column hightlighting
