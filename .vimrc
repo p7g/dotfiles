@@ -362,12 +362,6 @@ Plug 'p7g/vim-prettier'
                     \ xnoremap <buffer><silent> <leader>f <Plug>(PrettierFragment)
     augroup END
 
-Plug 'psf/black', {'branch': 'stable'}
-    augroup black_init
-        autocmd!
-        autocmd FileType python nnoremap <buffer><silent> <leader>f :Black<CR>
-    augroup END
-
 Plug 'rhysd/conflict-marker.vim'  " try to fix ct not being unbound
     command! ConflictMarkerUnbind :call <SID>conflict_marker_unmap()
     function! s:conflict_marker_unmap()
@@ -385,11 +379,6 @@ Plug 'rhysd/git-messenger.vim'
 
 Plug 'sheerun/vim-polyglot'
     let g:python_pep8_indent_searchpair_timeout = 75
-
-Plug 'vim-scripts/ReplaceWithRegister'
-    nmap gp <Plug>ReplaceWithRegisterOperator
-    nmap gpp <Plug>ReplaceWithRegisterLine
-    xmap gp <Plug>ReplaceWithRegisterVisual
 
 call plug#end()
 
