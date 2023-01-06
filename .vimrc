@@ -336,6 +336,7 @@ Plug 'p7g/Sunset'
         let l:doy = strftime('%j')
         if l:doy != s:current_day_of_year
             call Sunset_recalculate()
+            let s:current_day_of_year = l:doy
         endif
     endfunction
     augroup sunset_reload
