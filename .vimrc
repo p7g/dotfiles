@@ -304,11 +304,14 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
     let g:coq_settings = {
-                \ 'auto_start': 'shut-up',
+                \ 'auto_start': v:false,
                 \ 'xdg': has('nvim') ? v:true : v:false,
                 \ 'keymap.recommended': v:false,
                 \ 'keymap.bigger_preview': v:null,
                 \ }
+
+    " If a popup menu is open, send enter twice so a newline is still inserted
+    imap <expr> <CR> pumvisible() ? '<CR><CR>' : '<CR>'
 
 Plug 'neovim/nvim-lspconfig'
     nnoremap <silent> <leader>d :lua vim.diagnostic.setloclist()<CR>
