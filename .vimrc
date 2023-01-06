@@ -131,28 +131,25 @@ nnoremap <silent> [l :lprev<CR>
 command! -bang Bonly :call <SID>bufonly('<bang>')
 function! s:bufonly(bang)
     let l:currentbuf = bufnr('%')
-    let l:bufs = getbufinfo()
+    let l:bufs = getbufinfo({'buflisted': 1})
+    let l:delete_count = 0let l:force = a:bang ==# '!'
 
-    " Abort early if not called with ! and there are changed buffers
+    " Don't close unsaved buffers if not called with !
     for l:buf in l:bufs
-        if l:buf['bufnr'] == l:currentbuf
+        if l:buf.bufnr == l:currentbuf
             continue
-        elseif l:buf['changed'] && a:bang ==# ''
+        elseif l:buf.changed && !l:force
             echohl ErrorMsg
-            echomsg bufname(l:buf['bufnr']) 'has unsaved changes, use ! to force delete'
+            echomsg bufname(l:buf.bufnr) 'has unsaved changes, use ! to force delete'
             echohl None
-            return
+            continue
         endif
+
+        execute 'silent bdelete' . a:bang . ' ' . l:buf.bufnr
+        let l:delete_count += 1
     endfor
 
-    let g:_bufonly_delete_count = 0
-    let l:cmd = 'if bufnr() != ' . l:currentbuf
-                \ . ' | bdelete' . a:bang
-                \ . ' | let g:_bufonly_delete_count += 1'
-                \ . ' | endif'
-    execute 'bufdo ' . l:cmd
-    echomsg g:_bufonly_delete_count 'buffer(s) deleted'
-    unlet g:_bufonly_delete_count
+    echomsg l:delete_count 'buffer(s) deleted'
 endfunction
 
 command! ProfileStart :call <SID>profile_start()
