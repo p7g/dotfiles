@@ -44,7 +44,7 @@ set smartindent
 set splitbelow
 set splitright
 set tabstop=4
-" set termguicolors
+set termguicolors
 set undodir=$vimdir/undo
 set undofile
 set updatetime=300
