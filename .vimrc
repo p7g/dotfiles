@@ -245,7 +245,9 @@ if glob(s:autoload_path . '/plug.vim')->empty()
                 \ . ' https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
                 \ )
     if v:shell_error
+        echohl ErrorMsg
         echom 'Failed to get plug.vim: ' . s:error
+        echohl None
         finish
     endif
 endif
