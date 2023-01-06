@@ -103,7 +103,7 @@ fi
 
 export FZF_DEFAULT_OPTS='--color=bw'
 if >/dev/null command -v rg; then
-  export FZF_DEFAULT_COMMAND=$'rg --glob \'!**/node_modules\' --files'
+  export FZF_DEFAULT_COMMAND=$'rg --glob \'!**/node_modules\' --glob \'!__generated__\' --files'
 fi
 
 # find escape sequence to change terminal window title
