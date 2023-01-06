@@ -354,7 +354,9 @@ Plug 'sheerun/vim-polyglot'
 
 call plug#end()
 
-lua <<EOF
+if has('nvim')
+
+    lua <<EOF
 local lspconfig = require("lspconfig")
 
 vim.lsp.set_log_level("warn")
@@ -363,9 +365,42 @@ local function on_attach(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 end
 
-lspconfig.pyright.setup{}
+lspconfig.pyright.setup{
+    -- settings = {
+    --     python = {
+    --         pythonPath = "/Users/patrickgingras/.local/venvs/fellow/bin/python",
+    --     },
+    -- },
+}
+-- lspconfig.pylsp.setup{
+--     on_attach = on_attach,
+--     settings = {
+--         pylsp = {
+--             plugins = {
+--                 black = { enabled = true },
+--                 mypy = {
+--                     enabled = true,
+--                     live_mode = false,
+--                     dmypy = false,
+--                 },
+--                 flake8 = {
+--                     enabled = true,
+--                     executeable = "flakeheaven_compat",
+--                 },
+--                 pycodestyle = { enabled = false },
+--                 mccabe = { enabled = false },
+--                 pyflakes = { enabled = false },
+--             },
+--         },
+--     },
+-- }
 lspconfig.eslint.setup{}
 lspconfig.tsserver.setup{}
 EOF
+endif
 
-colorscheme zenbones
+if has('nvim')
+    colorscheme zenbones
+else
+    colorscheme iceberg
+endif
