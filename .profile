@@ -18,6 +18,10 @@ p() {
   fi
 
   if ! [ -d "$VENV_DIR/$venv_name" ]; then
+    if [ -f _env/bin/activate ]; then
+      source _env/bin/activate
+      return
+    fi
     >&2 printf 'Virtualenv "%s" not found\n' "$venv_name"
     return 3
   fi
