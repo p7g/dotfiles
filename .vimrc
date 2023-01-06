@@ -315,6 +315,7 @@ Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
 
 Plug 'neovim/nvim-lspconfig'
     nnoremap <silent> <leader>d :lua vim.diagnostic.setloclist()<CR>
+    nnoremap <silent> <leader>f :lua vim.lsp.buf.format()<CR>
     nnoremap <silent> ]c :lua vim.diagnostic.goto_next()<CR>
     nnoremap <silent> [c :lua vim.diagnostic.goto_prev()<CR>
     nnoremap <silent> gd :lua vim.lsp.buf.definition()<CR>
