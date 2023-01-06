@@ -385,6 +385,12 @@ call plug#end()
 lua <<EOF
 local lspconfig = require("lspconfig")
 
+vim.lsp.set_log_level("warn")
+
+local function on_attach(client, bufnr)
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+end
+
 lspconfig.pyright.setup{}
 lspconfig.eslint.setup{}
 lspconfig.tsserver.setup{}
