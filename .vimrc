@@ -51,22 +51,6 @@ set updatetime=300
 set wrap
 set writebackup
 
-function! CoqStatus()
-    let l:buf = bufnr('%')
-    let l:diagnostics = v:lua.require'lsp-status'.diagnostics(l:buf)
-    let l:status = []
-    if l:diagnostics.errors > 0
-        eval l:status->add('❌ ' . l:diagnostics.errors)
-    endif
-    if l:diagnostics.warnings > 0
-        eval l:status->add('⚠️ ' . l:diagnostics.warnings)
-    endif
-    if l:diagnostics.info > 0
-        eval l:status->add('ℹ️ ' . l:diagnostics.info)
-    endif
-    return l:status->join(' ')
-endfun
-
 set statusline=%#LineNr#  " match number column hightlighting
 set statusline+=\         " space before any text
 set statusline+=%f        " filename, no directory
@@ -76,7 +60,6 @@ set statusline+=%r        " readonly flag
 set statusline+=%h        " helpfile flag
 set statusline+=%w        " preview window flag
 set statusline+=%q        " quickfix window flag
-set statusline+=\ %{CoqStatus()}
 set statusline+=%=        " switch to right side
 set statusline+=%P        " percentage through file
 set statusline+=\         " space after percentage
@@ -301,17 +284,6 @@ Plug 'chrisbra/unicode.vim'
 
 Plug 'junegunn/fzf.vim'
     nnoremap <silent> <C-p> :FZF<CR>
-
-Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
-    let g:coq_settings = {
-                \ 'auto_start': v:false,
-                \ 'xdg': has('nvim') ? v:true : v:false,
-                \ 'keymap.recommended': v:false,
-                \ 'keymap.bigger_preview': v:null,
-                \ }
-
-    " If a popup menu is open, send enter twice so a newline is still inserted
-    imap <expr> <CR> pumvisible() ? '<CR><CR>' : '<CR>'
 
 Plug 'neovim/nvim-lspconfig'
     nnoremap <silent> <leader>d :lua vim.diagnostic.setloclist()<CR>
