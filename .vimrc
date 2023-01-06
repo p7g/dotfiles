@@ -344,6 +344,14 @@ Plug 'p7g/Sunset'
         autocmd CursorHold * nested call <SID>reinit_sunset_if_new_day()
     augroup END
 
+    function! Sunset_daytime_callback()
+        set background=light
+    endfunction
+
+    function! Sunset_nighttime_callback()
+        set background=dark
+    endfunction
+
 Plug 'p7g/vim-prettier'
     let g:prettier#quickfix_enabled = 0
 
