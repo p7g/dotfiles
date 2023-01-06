@@ -396,4 +396,4 @@ lspconfig.eslint.setup{}
 lspconfig.tsserver.setup{}
 EOF
 
-colorscheme rosebones
+colorscheme zenbones
