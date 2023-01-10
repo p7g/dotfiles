@@ -115,7 +115,8 @@ command! -bang Bonly :call <SID>bufonly('<bang>')
 function! s:bufonly(bang)
     let l:currentbuf = bufnr('%')
     let l:bufs = getbufinfo({'buflisted': 1})
-    let l:delete_count = 0let l:force = a:bang ==# '!'
+    let l:delete_count = 0
+    let l:force = a:bang ==# '!'
 
     " Don't close unsaved buffers if not called with !
     for l:buf in l:bufs
